@@ -10,6 +10,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.pignic.spacegrinder.component.Controllable;
 import com.pignic.spacegrinder.component.Controllable.ACTION;
+import com.pignic.spacegrinder.component.Controllable.Binding;
+import com.pignic.spacegrinder.component.Particle;
 import com.pignic.spacegrinder.component.Physical;
 
 public class ControlSystem extends EntitySystem {
@@ -18,6 +20,7 @@ public class ControlSystem extends EntitySystem {
 
 	private ImmutableArray<Entity> entities;
 
+	ComponentMapper<Particle> parm = ComponentMapper.getFor(Particle.class);
 	ComponentMapper<Physical> pm = ComponentMapper.getFor(Physical.class);
 
 	@Override
@@ -29,13 +32,24 @@ public class ControlSystem extends EntitySystem {
 	public void update(final float deltaTime) {
 		for (final Entity entity : entities) {
 			final Controllable c = cm.get(entity);
-			if (Gdx.input.isKeyPressed(c.getKeycode())) {
-				if (c.getAction().equals(ACTION.THRUST)) {
-					final Physical p = pm.get(entity);
-					// p.getBody().applyLinearImpulse(p.getBody().getWorldVector(new Vector2(1, 0).scl(c.getAmount())),
-					// p.getBody().getWorldCenter(), true);
-					p.getBody().applyForceToCenter(p.getBody().getWorldVector(new Vector2(1, 0).scl(c.getAmount())),
-							true);
+			for (final Binding binding : c.getBindings()) {
+				final Physical p = pm.get(entity);
+				final Particle part = parm.get(entity);
+				if (Gdx.input.isKeyPressed(binding.getKeycode())) {
+					if (c.getAction().equals(ACTION.THRUST)) {
+						// p.getBody().applyLinearImpulse(p.getBody().getWorldVector(new Vector2(1,
+						// 0).scl(c.getAmount())),
+						// p.getBody().getWorldCenter(), true);
+						p.getBody().applyForceToCenter(
+								p.getBody().getWorldVector(new Vector2(1, 0).scl(binding.getAmount())), true);
+						if (part != null) {
+							part.setActive(true);
+						}
+					}
+				} else {
+					if (c.getAction().equals(ACTION.THRUST)) {
+						part.setActive(false);
+					}
 				}
 			}
 		}

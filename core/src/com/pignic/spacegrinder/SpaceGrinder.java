@@ -30,7 +30,6 @@ public class SpaceGrinder extends ApplicationAdapter {
 	private Camera camera;
 	Box2DDebugRenderer debugRenderer;
 	Engine engine;
-	private long lastUpdate = 0;
 	Texture parallax1;
 	Texture parallax2;
 	private Entity ship;
@@ -40,7 +39,6 @@ public class SpaceGrinder extends ApplicationAdapter {
 	public void create() {
 		engine = new Engine();
 		world = new World(new Vector2(), false);
-		lastUpdate = System.currentTimeMillis();
 		debugRenderer = new Box2DDebugRenderer();
 		// debugRenderer.setDrawVelocities(true);
 		camera = new OrthographicCamera(800 / WORLD_SCALE, 600 / WORLD_SCALE);
@@ -72,9 +70,9 @@ public class SpaceGrinder extends ApplicationAdapter {
 		RenderHelper.drawTiledParalax(background, batch, 1, 0, camera);
 		RenderHelper.drawTiledParalax(parallax1, batch, 1, 0.3f, camera);
 		RenderHelper.drawTiledParalax(parallax2, batch, 1, 1, camera);
-		engine.update(-(lastUpdate - (lastUpdate = System.currentTimeMillis())));
+		engine.update(Gdx.graphics.getDeltaTime());
 		batch.end();
-		debugRenderer.render(world, camera.combined);
+		// debugRenderer.render(world, camera.combined);
 	}
 
 	@Override

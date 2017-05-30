@@ -36,6 +36,7 @@ public class PhysicSystem extends EntitySystem {
 		world.clearForces();
 		for (final Entity entity : entities) {
 			pm.get(entity).setScaled(phm.get(entity).getBody().getWorldCenter(), SpaceGrinder.WORLD_SCALE);
+			// pm.get(entity).set(phm.get(entity).getBody().getWorldCenter());
 			pm.get(entity).setAngle(phm.get(entity).getBody().getAngle());
 		}
 		super.update(deltaTime);

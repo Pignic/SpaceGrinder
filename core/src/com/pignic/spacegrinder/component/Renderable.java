@@ -2,7 +2,9 @@ package com.pignic.spacegrinder.component;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.pignic.spacegrinder.SpaceGrinder;
 
 public class Renderable implements Component {
 
@@ -10,21 +12,31 @@ public class Renderable implements Component {
 
 	private boolean rotate = true;
 
-	private float scale = 0.5f;
+	private float scale = 1f;
 
-	private Texture texture;
+	private final Sprite sprite;
+
+	private TextureRegion texture;
 
 	private boolean tiled = false;
 
 	private int zIndex = 0;
 
-	public Renderable(final Texture texture) {
-		this.texture = texture;
+	public Renderable(final TextureRegion texture) {
+		this(texture, 0);
 	}
 
-	public Renderable(final Texture texture, final int zIndex) {
+	public Renderable(final TextureRegion texture, final int zIndex) {
+		this(texture, zIndex, 1);
+	}
+
+	public Renderable(final TextureRegion texture, final int zIndex, final float scale) {
 		this.texture = texture;
 		this.zIndex = zIndex;
+		this.scale = scale;
+		sprite = new Sprite(texture);
+		sprite.setOriginCenter();
+		sprite.setScale(this.scale / SpaceGrinder.WORLD_SCALE);
 	}
 
 	public Color getColor() {
@@ -35,11 +47,15 @@ public class Renderable implements Component {
 		return scale;
 	}
 
-	public Texture getTexture() {
+	public Sprite getSprite() {
+		return sprite;
+	}
+
+	public TextureRegion getTexture() {
 		return texture;
 	}
 
-	public int getzIndex() {
+	public int getZIndex() {
 		return zIndex;
 	}
 
@@ -61,9 +77,10 @@ public class Renderable implements Component {
 
 	public void setScale(final float scale) {
 		this.scale = scale;
+		sprite.setScale(getScale() / SpaceGrinder.WORLD_SCALE);
 	}
 
-	public void setTexture(final Texture texture) {
+	public void setTexture(final TextureRegion texture) {
 		this.texture = texture;
 	}
 
