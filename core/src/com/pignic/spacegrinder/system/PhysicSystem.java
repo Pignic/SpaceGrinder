@@ -32,8 +32,8 @@ public class PhysicSystem extends EntitySystem {
 
 	@Override
 	public void update(final float deltaTime) {
-		world.step(1 / 60f, 6, 2);
-		world.clearForces();
+		world.step(1 / 60f, 16, 12);
+		// world.clearForces();
 		for (final Entity entity : entities) {
 			pm.get(entity).setScaled(phm.get(entity).getBody().getWorldCenter(), SpaceGrinder.WORLD_SCALE);
 			// pm.get(entity).set(phm.get(entity).getBody().getWorldCenter());

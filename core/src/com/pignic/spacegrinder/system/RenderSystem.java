@@ -10,7 +10,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter.ScaledNumericValue;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -23,8 +22,6 @@ public class RenderSystem extends EntitySystem {
 
 	private final SpriteBatch batch;
 
-	private final Camera camera;
-
 	private List<Entity> entities;
 
 	ComponentMapper<Particle> parm = ComponentMapper.getFor(Particle.class);
@@ -33,9 +30,8 @@ public class RenderSystem extends EntitySystem {
 
 	ComponentMapper<Renderable> rm = ComponentMapper.getFor(Renderable.class);
 
-	public RenderSystem(final SpriteBatch batch, final Camera camera) {
+	public RenderSystem(final SpriteBatch batch) {
 		this.batch = batch;
-		this.camera = camera;
 	}
 
 	@Override
@@ -44,12 +40,13 @@ public class RenderSystem extends EntitySystem {
 				.asList(engine.getEntitiesFor(Family.all(Position.class).one(Renderable.class, Particle.class).get())
 						.<Entity> toArray(Entity.class)),
 				new Comparator<Entity>() {
-
 					@Override
 					public int compare(final Entity entityA, final Entity entityB) {
-						return rm.get(entityA).getZIndex() - rm.get(entityB).getZIndex();
+						final Renderable renderableA = rm.get(entityA);
+						final Renderable renderableB = rm.get(entityB);
+						return (renderableA != null ? renderableA.getZIndex() : 0)
+								- (renderableB != null ? renderableB.getZIndex() : 0);
 					}
-
 				});
 	}
 

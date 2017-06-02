@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Controllable;
 import com.pignic.spacegrinder.component.Controllable.ACTION;
@@ -22,6 +23,10 @@ import com.pignic.spacegrinder.component.Position;
 import com.pignic.spacegrinder.component.Renderable;
 
 public class ShipFactory {
+
+	public static enum PART_TYPE {
+		ARMOR, BEACON, COCKPIT, COLLECTOR, COMPUTER, CONNECTOR, CONTAINER, EJECTOR, GENERATOR, GRAVITY, LANDING_GEAR, LIGHT, MASS, SENSOR, SHIELD, STRUCTURE, THRUSTER, WEAPON
+	}
 
 	private static TextureRegion cockpitTexture;
 	private static TextureRegion structureTexture;
@@ -128,9 +133,9 @@ public class ShipFactory {
 
 	private static void loadTextures() {
 		if (cockpitTexture == null) {
-			cockpitTexture = new TextureRegion(new Texture("cockpit.png"));
-			thrusterTexture = new TextureRegion(new Texture("thruster.png"));
-			structureTexture = new TextureRegion(new Texture("structure.png"));
+			cockpitTexture = new TextureRegion(new Texture(Constants.TEXTURE_PATH + "cockpit.png"));
+			thrusterTexture = new TextureRegion(new Texture(Constants.TEXTURE_PATH + "thruster.png"));
+			structureTexture = new TextureRegion(new Texture(Constants.TEXTURE_PATH + "structure.png"));
 		}
 	}
 }

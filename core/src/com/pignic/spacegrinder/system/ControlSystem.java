@@ -37,11 +37,11 @@ public class ControlSystem extends EntitySystem {
 				final Particle part = parm.get(entity);
 				if (Gdx.input.isKeyPressed(binding.getKeycode())) {
 					if (c.getAction().equals(ACTION.THRUST)) {
-						// p.getBody().applyLinearImpulse(p.getBody().getWorldVector(new Vector2(1,
-						// 0).scl(c.getAmount())),
+						// p.getBody().applyLinearImpulse(
+						// p.getBody().getWorldVector(new Vector2(1, 0).scl(binding.getAmount() / 100f)),
 						// p.getBody().getWorldCenter(), true);
 						p.getBody().applyForceToCenter(
-								p.getBody().getWorldVector(new Vector2(1, 0).scl(binding.getAmount())), true);
+								p.getBody().getWorldVector(new Vector2(1, 0).scl(binding.getAmount())), false);
 						if (part != null) {
 							part.setActive(true);
 						}

@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
+import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.SpaceGrinder;
 
 public class Particle implements Component {
@@ -28,12 +29,11 @@ public class Particle implements Component {
 
 	private float rotation = 0;
 
-	private final int zIndex = 0;
-
 	public Particle(final EFFECT effect) {
 		if (effects.size() <= 0) {
 			effects.put(EFFECT.THRUSTER, new ParticleEffect());
-			effects.get(EFFECT.THRUSTER).load(Gdx.files.internal("thruster-particle.p"), Gdx.files.internal(""));
+			effects.get(EFFECT.THRUSTER).load(Gdx.files.internal(Constants.PARTICLE_PATH + "thruster-particle.p"),
+					Gdx.files.internal(""));
 			effects.get(EFFECT.THRUSTER).scaleEffect(1 / SpaceGrinder.WORLD_SCALE);
 		}
 		emitter = new ParticleEmitter(effects.get(effect).getEmitters().first());
