@@ -1,0 +1,39 @@
+[
+	{
+		name: "small",
+		texture: "thruster",
+		input: 100,
+		density: 10,
+		shape: [
+			{x: -10, y: -10}, {x: 10, y: -10}, {x: 10, y: 10}, {x: -10, y: 10}, {x: -20, y: 5}, {x: -20, y: -5}
+		],
+		materials: [
+			{
+				type: "iron",
+				quantity: 100
+			}
+		],
+		cost: 1000,
+		// Specific for thrusters
+		maxThrust: 1000,
+		particle: ""
+	},{
+		name: "large",
+		texture: "thruster",
+		input: 600,
+		density: 15,
+		shape: [
+			{x: -10, y: -10}, {x: 10, y: -10}, {x: 10, y: 10}, {x: -10, y: 10}, {x: -20, y: 5}, {x: -20, y: -5}
+		],
+		materials: [
+			{
+				type: "iron",
+				quantity: 600
+			}
+		],
+		cost: 6000,
+		// Specific for thrusters
+		maxThrust: 10000,
+		particle: ""
+	}
+]

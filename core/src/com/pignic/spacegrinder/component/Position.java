@@ -11,6 +11,8 @@ public class Position implements Component {
 
 	private final Vector2 position = new Vector2();
 
+	private float z = 0;
+
 	public Position() {
 
 	}
@@ -20,9 +22,14 @@ public class Position implements Component {
 	}
 
 	public Position(final Vector2 position, final Vector2 bounds, final float angle) {
+		this(position, bounds, angle, 0);
+	}
+
+	public Position(final Vector2 position, final Vector2 bounds, final float angle, final float z) {
 		this.position.set(position);
 		this.bounds.set(bounds);
 		this.angle = angle;
+		this.z = z;
 	}
 
 	public Vector2 get() {
@@ -35,6 +42,10 @@ public class Position implements Component {
 
 	public Vector2 getBounds() {
 		return bounds;
+	}
+
+	public float getZ() {
+		return z;
 	}
 
 	public Vector2 set(final float x, final float y) {
@@ -61,5 +72,9 @@ public class Position implements Component {
 
 	public Vector2 setScaled(final Vector2 position, final float scale) {
 		return this.position.set(position.x * scale, position.y * scale);
+	}
+
+	public void setZ(final float z) {
+		this.z = z;
 	}
 }

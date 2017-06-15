@@ -1,13 +1,15 @@
 package com.pignic.spacegrinder.screen;
 
-import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.collision.Ray;
@@ -26,7 +28,8 @@ import com.pignic.spacegrinder.RenderHelper;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.factory.ShipFactory;
 import com.pignic.spacegrinder.factory.ShipFactory.PART_TYPE;
-import com.pignic.spacegrinder.system.HierarchySystem;
+import com.pignic.spacegrinder.system.ControlSystem;
+import com.pignic.spacegrinder.system.PhysicSystem;
 import com.pignic.spacegrinder.system.RenderSystem;
 
 public class BuilderScreen implements Screen {
@@ -39,26 +42,47 @@ public class BuilderScreen implements Screen {
 
 	private ShipFactory.PART_TYPE currentType;
 	private final Box2DDebugRenderer debugRenderer;
-	private final Engine engine;
+	private final PooledEngine engine;
 	private final SpaceGrinder game;
 	private final Texture grid;
 	private boolean paused = true;
+	private float rotation = 0;
 	private final Stage stage;
 	private final World world;
 
 	public BuilderScreen(final SpaceGrinder game) {
 		this.game = game;
-		engine = new Engine();
+		engine = new PooledEngine();
 		world = new World(new Vector2(), false);
 		debugRenderer = new Box2DDebugRenderer();
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / SpaceGrinder.WORLD_SCALE,
 				Gdx.graphics.getHeight() / SpaceGrinder.WORLD_SCALE);
 		batch = new SpriteBatch();
-		engine.addSystem(new HierarchySystem());
+		engine.addSystem(new ControlSystem());
+		engine.addSystem(new PhysicSystem(world));
 		engine.addSystem(new RenderSystem(batch));
 		grid = new Texture(Constants.TEXTURE_PATH + "grid.png");
-		stage = new Stage();
-		// stage.setDebugAll(true);
+		stage = new Stage() {
+			@Override
+			public boolean scrolled(final int amount) {
+				rotation += Math.PI * amount / 20;
+				return super.scrolled(amount);
+			}
+
+			@Override
+			public boolean touchDown(final int screenX, final int screenY, final int pointer, final int button) {
+				if (!super.touchDown(screenX, screenY, pointer, button)) {
+					final Ray ray = camera.getPickRay(screenX, screenY);
+					if (ShipFactory.PART_TYPE.THRUSTER.equals(currentType)) {
+						engine.addEntity(ShipFactory.buildThruster(world, new Vector2(ray.origin.x, ray.origin.y),
+								rotation, Input.Keys.Z));
+					} else if (ShipFactory.PART_TYPE.COCKPIT.equals(currentType)) {
+
+					}
+				}
+				return true;
+			}
+		};
 	}
 
 	public Table buildMenu(final BuilderScreen screen) {
@@ -118,11 +142,15 @@ public class BuilderScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		RenderHelper.drawTiledParalax(grid, batch, 1, 1, camera);
-		engine.update(Gdx.graphics.getDeltaTime());
+		engine.update(delta);
 		if (currentType != null) {
 			final Ray ray = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
-			batch.draw(new Texture(Constants.TEXTURE_PATH + "thruster.png"), ray.origin.x - 5, ray.origin.y - 5, 10,
-					10);
+			final Sprite sprite = new Sprite(ShipFactory.textures.get(currentType.clazz).get(0));
+			sprite.setOriginCenter();
+			sprite.setRotation((float) Math.toDegrees(rotation));
+			sprite.setScale(1f / SpaceGrinder.WORLD_SCALE);
+			sprite.setCenter(ray.origin.x, ray.origin.y);
+			sprite.draw(batch);
 		}
 		batch.end();
 		stage.draw();

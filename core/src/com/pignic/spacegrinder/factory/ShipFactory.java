@@ -1,6 +1,13 @@
 package com.pignic.spacegrinder.factory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,28 +18,107 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Controllable;
 import com.pignic.spacegrinder.component.Controllable.ACTION;
-import com.pignic.spacegrinder.component.Parent;
 import com.pignic.spacegrinder.component.Particle;
 import com.pignic.spacegrinder.component.Particle.EFFECT;
 import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.component.Position;
 import com.pignic.spacegrinder.component.Renderable;
+import com.pignic.spacegrinder.pojo.Armor;
+import com.pignic.spacegrinder.pojo.Beacon;
+import com.pignic.spacegrinder.pojo.Cockpit;
+import com.pignic.spacegrinder.pojo.Collector;
+import com.pignic.spacegrinder.pojo.Computer;
+import com.pignic.spacegrinder.pojo.Connector;
+import com.pignic.spacegrinder.pojo.Container;
+import com.pignic.spacegrinder.pojo.Ejector;
+import com.pignic.spacegrinder.pojo.Generator;
+import com.pignic.spacegrinder.pojo.Gravity;
+import com.pignic.spacegrinder.pojo.LandingGear;
+import com.pignic.spacegrinder.pojo.Light;
+import com.pignic.spacegrinder.pojo.Mass;
+import com.pignic.spacegrinder.pojo.Sensor;
+import com.pignic.spacegrinder.pojo.Shield;
+import com.pignic.spacegrinder.pojo.ShipPart;
+import com.pignic.spacegrinder.pojo.Structure;
+import com.pignic.spacegrinder.pojo.Thruster;
+import com.pignic.spacegrinder.pojo.Weapon;
 
 public class ShipFactory {
 
 	public static enum PART_TYPE {
-		ARMOR, BEACON, COCKPIT, COLLECTOR, COMPUTER, CONNECTOR, CONTAINER, EJECTOR, GENERATOR, GRAVITY, LANDING_GEAR, LIGHT, MASS, SENSOR, SHIELD, STRUCTURE, THRUSTER, WEAPON
+		//
+		ARMOR("Armor", "armor", Armor.class),
+		//
+		BEACON("Beacon", "beacon", Beacon.class),
+		//
+		COCKPIT("Cockpit", "cockpit", Cockpit.class),
+		//
+		COLLECTOR("Collector", "collector", Collector.class),
+		//
+		COMPUTER("Computer", "computer", Computer.class),
+		//
+		CONNECTOR("Connector", "connector", Connector.class),
+		//
+		CONTAINER("Container", "container", Container.class),
+		//
+		EJECTOR("Ejector", "ejector", Ejector.class),
+		//
+		GENERATOR("Generator", "generator", Generator.class),
+		//
+		GRAVITY("Gravity", "gravity", Gravity.class),
+		//
+		LANDING_GEAR("Landing gear", "landing_gear", LandingGear.class),
+		//
+		LIGHT("Light", "light", Light.class),
+		//
+		MASS("Mass", "mass", Mass.class),
+		//
+		SENSOR("Sensor", "sensor", Sensor.class),
+		//
+		SHIELD("Shield", "shield", Shield.class),
+		//
+		STRUCTURE("Structure", "structure", Structure.class),
+		//
+		THRUSTER("Thruster", "thruster", Thruster.class),
+		//
+		WEAPON("Weapon", "weapon", Weapon.class);
+
+		public Class<? extends ShipPart> clazz;
+		public List<ShipPart> config;
+		public String configFile;
+		public String typeName;
+
+		<T extends ShipPart> PART_TYPE(final String typeName, final String configFile, final Class<T> clazz) {
+			this.configFile = Constants.DATA_PATH + configFile + ".json";
+			this.clazz = clazz;
+			final Json json = new Json();
+			final ArrayList<JsonValue> list = json.fromJson(ArrayList.class, Gdx.files.internal(this.configFile));
+			if (list != null) {
+				textures.put(this.clazz, new ArrayList<TextureRegion>(list.size()));
+				config = new ArrayList<ShipPart>(list.size());
+				for (final JsonValue JsonValue : list) {
+					final ShipPart shipPart = json.readValue(clazz, JsonValue);
+					config.add(shipPart);
+					textures.get(this.clazz)
+							.add(new TextureRegion(new Texture(Constants.TEXTURE_PATH + shipPart.texture + ".png")));
+				}
+			}
+			this.typeName = typeName;
+		}
 	}
 
 	private static TextureRegion cockpitTexture;
 	private static TextureRegion structureTexture;
-	private static TextureRegion thrusterTexture;
+	public static Map<Class<? extends ShipPart>, List<TextureRegion>> textures = new HashMap<Class<? extends ShipPart>, List<TextureRegion>>();
 
-	public static Entity buildShip(final World world) {
+	public static List<Entity> buildShip(final World world) {
+		final Cockpit config = (Cockpit) PART_TYPE.COCKPIT.config.get(0);
 		loadTextures();
 		final Entity cockpit = new Entity();
 		final BodyDef bodyDef = new BodyDef();
@@ -40,12 +126,10 @@ public class ShipFactory {
 		bodyDef.position.add(new Vector2(0, 0));
 		final PolygonShape shape = new PolygonShape();
 		float scl = 1f / SpaceGrinder.WORLD_SCALE * 15f;
-		shape.set(new Vector2[] { new Vector2(-2 * scl, -2 * scl), new Vector2(2 * scl, -2 * scl),
-				new Vector2(4 * scl, -1 * scl), new Vector2(4 * scl, 1 * scl), new Vector2(2 * scl, 2 * scl),
-				new Vector2(-2 * scl, 2 * scl) });
+		shape.set(config.getShape(1f / SpaceGrinder.WORLD_SCALE));
 		cockpit.add(new Position(new Vector2(), new Vector2(6 * scl, 4 * scl)));
 		final FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.density = 2;
+		fixtureDef.density = config.density;
 		fixtureDef.shape = shape;
 		final Physical physical = new Physical(world, bodyDef, fixtureDef);
 		cockpit.add(physical);
@@ -68,10 +152,12 @@ public class ShipFactory {
 		final Entity structureE = buildStructure(world, physical, shipPartE.getComponent(Physical.class));
 		final Entity structureF = buildStructure(world, physical, shipPartF.getComponent(Physical.class));
 		final Entity structureG = buildStructure(world, physical, shipPartG.getComponent(Physical.class));
-		cockpit.add(new Parent(shipPartA, shipPartB, shipPartC, shipPartD, shipPartE, shipPartF, shipPartG, structureA,
-				structureB, structureC, structureD, structureE, structureF, structureG));
-		cockpit.add(new Renderable(cockpitTexture, 0, 0.75f));
-		return cockpit;
+		// cockpit.add(new Parent(shipPartA, shipPartB, shipPartC, shipPartD, shipPartE, shipPartF, shipPartG,
+		// structureA,
+		// structureB, structureC, structureD, structureE, structureF, structureG));
+		cockpit.add(new Renderable(textures.get(PART_TYPE.COCKPIT.clazz).get(0), 0.75f));
+		return Arrays.asList(new Entity[] { cockpit, shipPartA, shipPartB, shipPartC, shipPartD, shipPartE, shipPartF,
+				shipPartG, structureA, structureB, structureC, structureD, structureE, structureF, structureG });
 	}
 
 	public static Entity buildStructure(final World world, final Physical partA, final Physical partB) {
@@ -82,7 +168,7 @@ public class ShipFactory {
 		final Vector2 structureSize = new Vector2(
 				partA.getBody().getWorldCenter().dst(partB.getBody().getWorldCenter()), 10 / SpaceGrinder.WORLD_SCALE);
 		shape.setAsBox(structureSize.x / 2f, structureSize.y / 2f);
-		structure.add(new Position(new Vector2(), new Vector2(structureSize)));
+		structure.add(new Position(new Vector2(), new Vector2(structureSize), 0, -1));
 		bodyDef.angle = new Vector2(partB.getBody().getWorldCenter()).sub(partA.getBody().getWorldCenter()).angleRad();
 		final FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
@@ -101,12 +187,13 @@ public class ShipFactory {
 		jointDef.bodyB = partB.getBody();
 		jointDef.referenceAngle = partB.getBody().getAngle() - bodyDef.angle;
 		world.createJoint(jointDef);
-		structure.add(new Renderable(structureTexture, -1, 0.1f));
+		structure.add(new Renderable(structureTexture, 0.1f));
 		return structure;
 	}
 
 	public static Entity buildThruster(final World world, final Vector2 position, final float angle,
 			final int... keycodes) {
+		final Thruster config = (Thruster) PART_TYPE.THRUSTER.config.get(0);
 		final Entity shipPart = new Entity();
 		final BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
@@ -114,17 +201,15 @@ public class ShipFactory {
 		bodyDef.angle = angle;
 		final PolygonShape shape = new PolygonShape();
 		final float scl = 1 / SpaceGrinder.WORLD_SCALE * 5;
-		shape.set(new Vector2[] { new Vector2(-2 * scl, -2 * scl), new Vector2(2 * scl, -2 * scl),
-				new Vector2(2 * scl, 2 * scl), new Vector2(-2 * scl, 2 * scl), new Vector2(-4 * scl, 1 * scl),
-				new Vector2(-4 * scl, -1 * scl) });
-		shipPart.add(new Position(new Vector2(), new Vector2(6 * scl, 4 * scl)));
+		shape.set(config.getShape(1f / SpaceGrinder.WORLD_SCALE));
+		shipPart.add(new Position(new Vector2(), new Vector2(6 * scl, 4 * scl), 0, 1));
 		final FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
-		fixtureDef.density = 1;
+		fixtureDef.density = config.density;
 		final Physical physical = new Physical(world, bodyDef, fixtureDef);
 		shipPart.add(physical);
-		shipPart.add(new Controllable(ACTION.THRUST, 1000, keycodes));
-		shipPart.add(new Renderable(thrusterTexture, 1, 0.5f));
+		shipPart.add(new Controllable(ACTION.THRUST, config.maxThrust, keycodes));
+		shipPart.add(new Renderable(textures.get(PART_TYPE.THRUSTER.clazz).get(0), 0.5f));
 		final Particle particle = new Particle(EFFECT.THRUSTER);
 		particle.setRotation((float) Math.PI);
 		shipPart.add(particle);
@@ -134,7 +219,6 @@ public class ShipFactory {
 	private static void loadTextures() {
 		if (cockpitTexture == null) {
 			cockpitTexture = new TextureRegion(new Texture(Constants.TEXTURE_PATH + "cockpit.png"));
-			thrusterTexture = new TextureRegion(new Texture(Constants.TEXTURE_PATH + "thruster.png"));
 			structureTexture = new TextureRegion(new Texture(Constants.TEXTURE_PATH + "structure.png"));
 		}
 	}

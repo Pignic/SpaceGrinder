@@ -1,44 +1,38 @@
 package com.pignic.spacegrinder.system;
 
 import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.physics.box2d.World;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.component.Position;
 
-public class PhysicSystem extends EntitySystem {
+public class PhysicSystem extends IteratingSystem {
 
-	private ImmutableArray<Entity> entities;
-
-	ComponentMapper<Physical> phm = ComponentMapper.getFor(Physical.class);
-
-	ComponentMapper<Position> pm = ComponentMapper.getFor(Position.class);
+	private static class Mapper {
+		public static final ComponentMapper<Physical> physical = ComponentMapper.getFor(Physical.class);
+		public static final ComponentMapper<Position> position = ComponentMapper.getFor(Position.class);
+	}
 
 	private final World world;
 
 	public PhysicSystem(final World world) {
+		super(Family.all(Position.class, Physical.class).get());
 		this.world = world;
 	}
 
 	@Override
-	public void addedToEngine(final Engine engine) {
-		entities = engine.getEntitiesFor(Family.all(Position.class, Physical.class).get());
+	protected void processEntity(final Entity entity, final float deltaTime) {
+		Mapper.position.get(entity).setScaled(Mapper.physical.get(entity).getBody().getWorldCenter(),
+				SpaceGrinder.WORLD_SCALE);
+		Mapper.position.get(entity).setAngle(Mapper.physical.get(entity).getBody().getAngle());
 	}
 
 	@Override
 	public void update(final float deltaTime) {
-		world.step(1 / 60f, 16, 12);
-		// world.clearForces();
-		for (final Entity entity : entities) {
-			pm.get(entity).setScaled(phm.get(entity).getBody().getWorldCenter(), SpaceGrinder.WORLD_SCALE);
-			// pm.get(entity).set(phm.get(entity).getBody().getWorldCenter());
-			pm.get(entity).setAngle(phm.get(entity).getBody().getAngle());
-		}
 		super.update(deltaTime);
+		world.step(1 / 60f, 16, 12);
 	}
 }

@@ -10,6 +10,10 @@ public class Configuration {
 	private static final String PREF_SOUND_VOL = "sound";
 	private static final String PREFS_NAME = "b2dtut";
 
+	public Configuration() {
+
+	}
+
 	public float getMusicVolume() {
 		return getPrefs().getFloat(PREF_MUSIC_VOLUME, 0.5f);
 	}

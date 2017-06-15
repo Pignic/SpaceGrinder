@@ -20,19 +20,12 @@ public class Renderable implements Component {
 
 	private boolean tiled = false;
 
-	private int zIndex = 0;
-
 	public Renderable(final TextureRegion texture) {
-		this(texture, 0);
+		this(texture, 1);
 	}
 
-	public Renderable(final TextureRegion texture, final int zIndex) {
-		this(texture, zIndex, 1);
-	}
-
-	public Renderable(final TextureRegion texture, final int zIndex, final float scale) {
+	public Renderable(final TextureRegion texture, final float scale) {
 		this.texture = texture;
-		this.zIndex = zIndex;
 		this.scale = scale;
 		sprite = new Sprite(texture);
 		sprite.setOriginCenter();
@@ -53,10 +46,6 @@ public class Renderable implements Component {
 
 	public TextureRegion getTexture() {
 		return texture;
-	}
-
-	public int getZIndex() {
-		return zIndex;
 	}
 
 	public boolean isRotate() {
@@ -86,9 +75,5 @@ public class Renderable implements Component {
 
 	public void setTiled(final boolean tiled) {
 		this.tiled = tiled;
-	}
-
-	public void setzIndex(final int zIndex) {
-		this.zIndex = zIndex;
 	}
 }

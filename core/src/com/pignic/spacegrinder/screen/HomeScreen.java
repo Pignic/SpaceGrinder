@@ -66,7 +66,7 @@ public class HomeScreen implements Screen {
 		table = new Table();
 		table.setFillParent(true);
 		stage.addActor(table);
-		table.setDebug(true);
+		// table.setDebug(true);
 		final TextButtonStyle style = new TextButtonStyle();
 		style.font = new BitmapFont();
 		final TextButton gameButton = new TextButton("Play", style);

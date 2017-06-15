@@ -1,0 +1,19 @@
+[
+	{
+		name: "small",
+		texture: "cockpit",
+		input: 10,
+		density: 5,
+		shape: [
+			{x: -30, y: -30}, {x: 30, y: -30}, {x: 60, y: -15}, {x: 60, y: 15}, {x: 30, y: 30}, {x: -30, y: 30}
+		],
+		materials: [
+			{
+				type: "iron",
+				quantity: 100
+			}
+		],
+		cost: 1000
+		// Specific for cockpit
+	}
+]
