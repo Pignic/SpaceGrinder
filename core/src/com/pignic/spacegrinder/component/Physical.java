@@ -11,7 +11,6 @@ public class Physical implements Component {
 	private final Body body;
 
 	public Physical(final World world, final BodyDef bodyDef, final FixtureDef fixtureDef) {
-		// bodyDef.position.scl(SpaceGrinder.WORLD_SCALE);
 		body = world.createBody(bodyDef);
 		body.createFixture(fixtureDef);
 		body.setUserData(this);

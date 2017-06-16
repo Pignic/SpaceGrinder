@@ -1,7 +1,8 @@
 [
 	{
 		name: "small",
-		texture: "thruster",
+		texture: "thruster/small",
+		textureScale: 0.5,
 		input: 100,
 		density: 10,
 		shape: [
@@ -16,10 +17,18 @@
 		cost: 1000,
 		// Specific for thrusters
 		maxThrust: 1000,
-		particle: ""
+		particle: "",
+		hitpoints: 100,
+		deflection: [
+			{
+				type: "LIGHT",
+				factor: 1
+			}
+		]
 	},{
 		name: "large",
-		texture: "thruster",
+		texture: "thruster/small",
+		textureScale: 0.5,
 		input: 600,
 		density: 15,
 		shape: [
@@ -34,6 +43,13 @@
 		cost: 6000,
 		// Specific for thrusters
 		maxThrust: 10000,
-		particle: ""
+		particle: "",
+		hitpoints: 600,
+		deflection: [
+			{
+				type: "LIGHT",
+				factor: 1
+			}
+		]
 	}
 ]

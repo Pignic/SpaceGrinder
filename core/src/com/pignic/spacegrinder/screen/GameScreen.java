@@ -19,7 +19,7 @@ import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.RenderHelper;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Physical;
-import com.pignic.spacegrinder.factory.ShipFactory;
+import com.pignic.spacegrinder.factory.complex.ShipFactory;
 import com.pignic.spacegrinder.system.ControlSystem;
 import com.pignic.spacegrinder.system.PhysicSystem;
 import com.pignic.spacegrinder.system.RenderSystem;

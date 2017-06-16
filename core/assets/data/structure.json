@@ -1,0 +1,17 @@
+[
+	{
+		name: "structure",
+		texture: "structure/structure",
+		textureScale: 0.5,
+		density: 5,
+		materials: [
+			{
+				type: "iron",
+				quantity: 10
+			}
+		],
+		cost: 1000,
+		// Specific for structures
+		thickness: 10
+	}
+]

@@ -6,13 +6,17 @@ import java.util.List;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class ShipPart implements JSONObject {
+
 	public float cost;
+	public Deflection[] deflection;
 	public float density;
+	public int hitpoints;
 	public float input;
 	public Material[] materials;
 	public String name;
 	public SimpleVector[] shape;
 	public String texture;
+	public float textureScale;
 
 	public Vector2[] getShape() {
 		return getShape(1);

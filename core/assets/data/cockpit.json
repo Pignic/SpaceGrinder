@@ -1,7 +1,8 @@
 [
 	{
 		name: "small",
-		texture: "cockpit",
+		texture: "cockpit/small",
+		textureScale: 0.75,
 		input: 10,
 		density: 5,
 		shape: [
