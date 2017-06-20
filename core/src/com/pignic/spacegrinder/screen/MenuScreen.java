@@ -1,9 +1,8 @@
 package com.pignic.spacegrinder.screen;
 
-import com.badlogic.gdx.Screen;
 import com.pignic.spacegrinder.SpaceGrinder;
 
-public class MenuScreen implements Screen {
+public class MenuScreen extends AbstractScreen {
 
 	SpaceGrinder game;
 

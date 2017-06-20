@@ -18,17 +18,17 @@ public class ThrusterFactory extends ShipPartFactory {
 
 	public Entity build(final World world, final Vector2 position, final float angle, final int... keycodes) {
 		final Thruster config = (Thruster) PART_TYPE.THRUSTER.config.get(0);
-		final Entity shipPart = new Entity();
+		final Entity entity = new Entity();
 		final float scl = 1 / SpaceGrinder.WORLD_SCALE * 5;
-		shipPart.add(new Position(new Vector2(), new Vector2(6 * scl, 4 * scl), 0, 1));
-		shipPart.add(getPhysicalComponent(world, config, position, angle));
-		shipPart.add(new Controllable(ACTION.THRUST, config.maxThrust, keycodes));
-		shipPart.add(new Renderable(AssetManager.shipPartsTextures.get(PART_TYPE.THRUSTER.clazz).get(0),
+		entity.add(new Position(new Vector2(), new Vector2(6 * scl, 4 * scl), 0, 1));
+		entity.add(getPhysicalComponent(world, entity, config, position, angle));
+		entity.add(new Controllable(ACTION.THRUST, config.maxThrust, keycodes));
+		entity.add(new Renderable(AssetManager.shipPartsTextures.get(PART_TYPE.THRUSTER.clazz).get(0),
 				config.textureScale));
 		final Particle particle = new Particle(EFFECT.THRUSTER);
 		particle.setRotation((float) Math.PI);
-		shipPart.add(particle);
-		return shipPart;
+		entity.add(particle);
+		return entity;
 	}
 
 	@Override

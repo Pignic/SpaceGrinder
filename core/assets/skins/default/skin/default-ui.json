@@ -1,0 +1,94 @@
+{
+com.badlogic.gdx.graphics.g2d.BitmapFont: {
+	font-export: {
+		file: font-export.fnt
+	}
+	font-over-export: {
+		file: font-over-export.fnt
+	}
+	font-pressed-export: {
+		file: font-pressed-export.fnt
+	}
+}
+com.badlogic.gdx.graphics.Color: {
+	darkGrey: {
+		r: 0.13666667
+		g: 0.12436667
+		b: 0.12436667
+		a: 1
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+	default: {
+		up: button
+		down: button-pressed
+		over: button-over
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
+	default: {
+		checkboxOn: checkbox-pressed
+		checkboxOff: checkbox
+		checkboxOver: checkbox-over
+		font: font-export
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
+	default: {
+		imageUp: button
+		imageDown: button-pressed
+		imageOver: button-over
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
+	default: {
+		imageUp: button
+		imageDown: button-pressed
+		imageOver: button-over
+		font: font-export
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+	default: {
+		font: font-export
+		fontColor: darkGrey
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
+	default-horizontal: {
+		knobOver: slider-knob-pressed
+		knobDown: slider-knob-pressed
+		background: slider
+		knob: slider-knob
+		knobBefore: slider-before
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+	default: {
+		font: font-export
+		fontColor: darkGrey
+		up: button
+		down: button-pressed
+		over: button-over
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
+	default: {
+		font: font-export
+		fontColor: darkGrey
+		background: textfield
+		focusedBackground: textfield-selected
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
+	default: {
+		label: default
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Tree$TreeStyle: {
+	default: {
+		plus: plus
+		minus: minus
+	}
+}
+}

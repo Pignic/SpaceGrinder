@@ -5,7 +5,6 @@ import java.util.List;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -24,7 +23,7 @@ import com.pignic.spacegrinder.system.ControlSystem;
 import com.pignic.spacegrinder.system.PhysicSystem;
 import com.pignic.spacegrinder.system.RenderSystem;
 
-public class GameScreen implements Screen {
+public class GameScreen extends AbstractScreen {
 
 	private final Texture background;
 	private final SpriteBatch batch;

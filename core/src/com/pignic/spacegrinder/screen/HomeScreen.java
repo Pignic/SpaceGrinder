@@ -1,20 +1,17 @@
 package com.pignic.spacegrinder.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.SpaceGrinder.SCENE;
 
-public class HomeScreen implements Screen {
+public class HomeScreen extends AbstractScreen {
 
 	private final SpaceGrinder game;
 	private final Stage stage;
@@ -66,11 +63,8 @@ public class HomeScreen implements Screen {
 		table = new Table();
 		table.setFillParent(true);
 		stage.addActor(table);
-		// table.setDebug(true);
-		final TextButtonStyle style = new TextButtonStyle();
-		style.font = new BitmapFont();
-		final TextButton gameButton = new TextButton("Play", style);
-		table.add(gameButton);
+		final TextButton gameButton = new TextButton("Play", style.skin);
+		table.add(gameButton).width(100);
 		gameButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(final ChangeEvent event, final Actor actor) {
@@ -78,8 +72,8 @@ public class HomeScreen implements Screen {
 			}
 		});
 		table.row();
-		final TextButton buildButton = new TextButton("Build", style);
-		table.add(buildButton);
+		final TextButton buildButton = new TextButton("Build", style.skin);
+		table.add(buildButton).width(100);
 		buildButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(final ChangeEvent event, final Actor actor) {
@@ -87,8 +81,8 @@ public class HomeScreen implements Screen {
 			}
 		});
 		table.row();
-		final TextButton optionsButton = new TextButton("Options", style);
-		table.add(optionsButton);
+		final TextButton optionsButton = new TextButton("Options", style.skin);
+		table.add(optionsButton).width(100);
 		optionsButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(final ChangeEvent event, final Actor actor) {
@@ -96,8 +90,8 @@ public class HomeScreen implements Screen {
 			}
 		});
 		table.row();
-		final TextButton exitButton = new TextButton("Exit", style);
-		table.add(exitButton);
+		final TextButton exitButton = new TextButton("Exit", style.skin);
+		table.add(exitButton).width(100);
 		exitButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(final ChangeEvent event, final Actor actor) {

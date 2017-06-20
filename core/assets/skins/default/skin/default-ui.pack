@@ -1,0 +1,96 @@
+
+default-ui.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+button-over
+  rotate: false
+  xy: 1, 1
+  size: 28, 24
+  orig: 28, 24
+  offset: 0, 0
+  index: -1
+button-pressed
+  rotate: false
+  xy: 31, 1
+  size: 28, 24
+  orig: 28, 24
+  offset: 0, 0
+  index: -1
+button
+  rotate: false
+  xy: 61, 1
+  size: 28, 24
+  orig: 28, 24
+  offset: 0, 0
+  index: -1
+checkbox-over
+  rotate: false
+  xy: 91, 1
+  size: 24, 24
+  orig: 24, 24
+  offset: 0, 0
+  index: -1
+checkbox-pressed
+  rotate: false
+  xy: 117, 1
+  size: 24, 24
+  orig: 24, 24
+  offset: 0, 0
+  index: -1
+checkbox
+  rotate: false
+  xy: 143, 1
+  size: 24, 24
+  orig: 24, 24
+  offset: 0, 0
+  index: -1
+slider-after
+  rotate: false
+  xy: 169, 1
+  size: 4, 24
+  orig: 4, 24
+  offset: 0, 0
+  index: -1
+slider-before
+  rotate: false
+  xy: 175, 1
+  size: 4, 24
+  orig: 4, 24
+  offset: 0, 0
+  index: -1
+slider
+  rotate: false
+  xy: 181, 1
+  size: 4, 24
+  orig: 4, 24
+  offset: 0, 0
+  index: -1
+slider-knob-pressed
+  rotate: false
+  xy: 187, 19
+  size: 6, 6
+  orig: 6, 6
+  offset: 0, 0
+  index: -1
+slider-knob
+  rotate: false
+  xy: 187, 11
+  size: 6, 6
+  orig: 6, 6
+  offset: 0, 0
+  index: -1
+textfield-selected
+  rotate: false
+  xy: 195, 19
+  size: 6, 6
+  orig: 6, 6
+  offset: 0, 0
+  index: -1
+textfield
+  rotate: false
+  xy: 187, 3
+  size: 6, 6
+  orig: 6, 6
+  offset: 0, 0
+  index: -1

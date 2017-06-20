@@ -40,8 +40,8 @@ public abstract class ShipPartFactory {
 		return instance;
 	}
 
-	protected static Physical getPhysicalComponent(final World world, final ShipPart partConfig, final Vector2 position,
-			final float angle) {
+	protected static Physical getPhysicalComponent(final World world, final Entity entity, final ShipPart partConfig,
+			final Vector2 position, final float angle) {
 		final BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
 		bodyDef.position.add(position);
@@ -51,7 +51,7 @@ public abstract class ShipPartFactory {
 		final FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.density = partConfig.density;
 		fixtureDef.shape = shape;
-		return new Physical(world, bodyDef, fixtureDef);
+		return new Physical(world, entity, bodyDef, fixtureDef);
 	}
 
 	public abstract Entity buildPart(final World world, final Vector2 position, final float angle);

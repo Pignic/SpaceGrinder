@@ -35,7 +35,7 @@ public class StructureFactory {
 		final FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
 		fixtureDef.density = config.density;
-		final Physical physical = new Physical(world, bodyDef, fixtureDef);
+		final Physical physical = new Physical(world, structure, bodyDef, fixtureDef);
 		structure.add(physical);
 		final WeldJointDef jointDef = new WeldJointDef();
 		jointDef.collideConnected = false;

@@ -15,13 +15,13 @@ public class LightFactory extends ShipPartFactory {
 	@Override
 	public Entity buildPart(final World world, final Vector2 position, final float angle) {
 		final Light config = (Light) PART_TYPE.LIGHT.config.get(0);
-		final Entity armor = new Entity();
+		final Entity entity = new Entity();
 		final float scl = 1f / SpaceGrinder.WORLD_SCALE * 15f;
-		armor.add(new Position(new Vector2(), new Vector2(6 * scl, 4 * scl)));
-		armor.add(getPhysicalComponent(world, config, position, angle));
-		armor.add(
+		entity.add(new Position(new Vector2(), new Vector2(6 * scl, 4 * scl)));
+		entity.add(getPhysicalComponent(world, entity, config, position, angle));
+		entity.add(
 				new Renderable(AssetManager.shipPartsTextures.get(PART_TYPE.LIGHT.clazz).get(0), config.textureScale));
-		return armor;
+		return entity;
 	}
 
 }

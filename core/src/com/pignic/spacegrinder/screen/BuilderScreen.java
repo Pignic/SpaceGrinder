@@ -3,15 +3,15 @@ package com.pignic.spacegrinder.screen;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -27,14 +27,13 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.RenderHelper;
 import com.pignic.spacegrinder.SpaceGrinder;
+import com.pignic.spacegrinder.component.Configurable;
 import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.factory.basic.ShipPartFactory;
 import com.pignic.spacegrinder.factory.basic.StructureFactory;
@@ -44,14 +43,11 @@ import com.pignic.spacegrinder.system.ControlSystem;
 import com.pignic.spacegrinder.system.PhysicSystem;
 import com.pignic.spacegrinder.system.RenderSystem;
 
-public class BuilderScreen implements Screen {
+public class BuilderScreen extends AbstractScreen {
 
 	private final SpriteBatch batch;
-
 	private final Camera camera;
-
 	private Actor currentButton;
-
 	private Entity currentPiece;
 	private ShipFactory.PART_TYPE currentType;
 	private final Box2DDebugRenderer debugRenderer;
@@ -60,6 +56,7 @@ public class BuilderScreen implements Screen {
 	private final SpaceGrinder game;
 	private final Texture grid;
 	private Body lastPickedBody;
+	private Table menuTable;
 	private final Vector3 mouse = new Vector3();
 	QueryCallback mouseClickCallback = new QueryCallback() {
 		@Override
@@ -76,8 +73,10 @@ public class BuilderScreen implements Screen {
 	private Body originBody;
 	private boolean paused = true;
 	private Body pickedBody;
+	private Table propertiesTable;
 	private float rotation = 0;
 	private boolean runningSimulation = false;
+
 	private final Stage stage;
 
 	private final World world;
@@ -111,7 +110,9 @@ public class BuilderScreen implements Screen {
 			@Override
 			public boolean scrolled(final int amount) {
 				rotation += Math.PI * amount / 20;
-				mouseJoint.getBodyB().setTransform(mouseJoint.getBodyB().getWorldCenter(), rotation);
+				if (mouseJoint != null && mouseJoint.getBodyB() != null) {
+					mouseJoint.getBodyB().setTransform(mouseJoint.getBodyB().getWorldCenter(), rotation);
+				}
 				return super.scrolled(amount);
 			}
 
@@ -123,21 +124,28 @@ public class BuilderScreen implements Screen {
 					pickedBody = null;
 					world.QueryAABB(mouseClickCallback, mouse.x - 0.0001f, mouse.y - 0.0001f, mouse.x + 0.0001f,
 							mouse.y + 0.0001f);
-					if (currentType != null) {
-						final Entity createdEntity = buildPart(currentType,
-								mouseJoint == null ? null : mouseJoint.getBodyB().getWorldCenter());
-						if (createdEntity != null) {
+					if (button == Buttons.LEFT) {
+						if (currentType != null) {
+							final Entity createdEntity = buildPart(currentType,
+									mouseJoint == null ? null : mouseJoint.getBodyB().getWorldCenter());
 							if (createdEntity != null) {
-								final Physical physical = createdEntity.getComponent(Physical.class);
-								if (physical != null) {
-									physical.getBody().setType(BodyType.StaticBody);
+								if (createdEntity != null) {
+									final Physical physical = createdEntity.getComponent(Physical.class);
+									if (physical != null) {
+										physical.getBody().setType(BodyType.StaticBody);
+									}
 								}
+								engine.addEntity(createdEntity);
+								entities.add(createdEntity);
 							}
-							engine.addEntity(createdEntity);
-							entities.add(createdEntity);
+						} else if (pickedBody != null) {
+							// Show properties
+							setupProperties((Entity) pickedBody.getUserData());
+						} else {
+							propertiesTable.setVisible(false);
 						}
-					} else {
-
+					} else if (button == Buttons.RIGHT) {
+						clearTempEntity();
 					}
 				}
 				return true;
@@ -146,29 +154,21 @@ public class BuilderScreen implements Screen {
 	}
 
 	public Table buildMenu(final BuilderScreen screen) {
-		final BitmapFont font = new BitmapFont();
-		font.setUseIntegerPositions(false);
-
-		final ButtonStyle style = new ButtonStyle();
-		final LabelStyle lStyle = new LabelStyle();
-		lStyle.font = font;
-
-		final Table table = new Table();
-
-		final Button runButton = new Button(style);
-		runButton.add(new Label("run", lStyle));
+		final Table table = new Table(style.skin);
+		final Button runButton = new Button(style.skin);
+		runButton.add(new Label("run", style.skin));
 		runButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(final ChangeEvent event, final Actor actor) {
 				setSimulation(!runningSimulation);
 			}
 		});
-		table.add(runButton).left();
+		table.add(runButton).width(100).left();
 		table.row();
 
 		for (final ShipFactory.PART_TYPE type : ShipFactory.PART_TYPE.values()) {
-			final Button partButton = new Button(style);
-			partButton.add(new Label(type.name(), lStyle));
+			final Button partButton = new Button(style.skin);
+			partButton.add(new Label(type.name(), style.skin));
 			partButton.setUserObject(type);
 			partButton.addListener(new ChangeListener() {
 				@Override
@@ -185,15 +185,15 @@ public class BuilderScreen implements Screen {
 						def.bodyA = originBody;
 						def.bodyB = physical.getBody();
 						def.collideConnected = true;
-						def.bodyB.setTransform(new Vector2(mouse.x, mouse.y), (float) Math.toDegrees(rotation));
+						def.bodyB.setTransform(new Vector2(mouse.x, mouse.y), rotation);
 						def.target.set(mouse.x, mouse.y);
-						def.maxForce = 1000.0f * physical.getBody().getMass();
+						def.maxForce = 10000.0f * physical.getBody().getMass();
 						mouseJoint = (MouseJoint) world.createJoint(def);
 						physical.getBody().setAwake(true);
 					}
 				}
 			});
-			table.add(partButton).left();
+			table.add(partButton).width(100).left();
 			table.row();
 		}
 		table.bottom().left();
@@ -204,8 +204,9 @@ public class BuilderScreen implements Screen {
 		Entity createdEntity = null;
 		if (ShipFactory.PART_TYPE.STRUCTURE.equals(currentType)) {
 			if (pickedBody != null && lastPickedBody != null && pickedBody != lastPickedBody) {
-				createdEntity = StructureFactory.build(world, (Physical) pickedBody.getUserData(),
-						(Physical) lastPickedBody.getUserData());
+				createdEntity = StructureFactory.build(world,
+						((Entity) pickedBody.getUserData()).getComponent(Physical.class),
+						((Entity) lastPickedBody.getUserData()).getComponent(Physical.class));
 				lastPickedBody = null;
 				pickedBody = null;
 			}
@@ -214,6 +215,15 @@ public class BuilderScreen implements Screen {
 					currentType.clazz);
 		}
 		return createdEntity;
+	}
+
+	public Table buildProperties(final BuilderScreen screen) {
+		final Table table = new Table();
+		table.setWidth(300);
+		table.setVisible(false);
+		table.top();
+		table.right();
+		return table;
 	}
 
 	private void clearTempEntity() {
@@ -254,20 +264,24 @@ public class BuilderScreen implements Screen {
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		stage.draw();
 		batch.begin();
 		RenderHelper.drawTiledParalax(grid, batch, 1, 1, camera);
 		engine.update(delta);
 		batch.end();
 		debugRenderer.render(world, camera.combined);
+		stage.act(delta);
+		stage.draw();
 	}
 
 	@Override
 	public void resize(final int width, final int height) {
 		camera.viewportWidth = width / SpaceGrinder.WORLD_SCALE;
 		camera.viewportHeight = height / SpaceGrinder.WORLD_SCALE;
-		stage.getViewport().setWorldHeight(height);
 		camera.update();
+		stage.getViewport().setScreenSize(width, height);
+		stage.getViewport().setWorldSize(width, height);
+		stage.getViewport().apply(true);
+		propertiesTable.setPosition(stage.getWidth() - propertiesTable.getWidth(), stage.getHeight());
 	}
 
 	@Override
@@ -286,11 +300,23 @@ public class BuilderScreen implements Screen {
 		return active;
 	}
 
+	private void setupProperties(final Entity entity) {
+		propertiesTable.clear();
+		propertiesTable.setVisible(true);
+		propertiesTable.setPosition(stage.getWidth() - propertiesTable.getWidth(), stage.getHeight());
+		for (final Component component : entity.getComponents()) {
+			if (component instanceof Configurable) {
+				((Configurable) component).getConfiguration(propertiesTable).row();
+			}
+		}
+	}
+
 	@Override
 	public void show() {
 		paused = false;
 		stage.clear();
-		stage.addActor(buildMenu(this));
+		stage.addActor(menuTable = buildMenu(this));
+		stage.addActor(propertiesTable = buildProperties(this));
 		Gdx.input.setInputProcessor(stage);
 	}
 

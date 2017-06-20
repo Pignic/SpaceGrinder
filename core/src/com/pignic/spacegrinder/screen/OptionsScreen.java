@@ -1,7 +1,6 @@
 package com.pignic.spacegrinder.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -9,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -17,10 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.pignic.spacegrinder.SpaceGrinder;
 
-public class OptionsScreen implements Screen {
+public class OptionsScreen extends AbstractScreen {
 	private final SpaceGrinder game;
 	private Label musicOnOffLabel;
-	private final String skinName = "glassy";
 	private Label soundOnOffLabel;
 	private final Stage stage;
 	// our new fields
@@ -77,8 +74,7 @@ public class OptionsScreen implements Screen {
 		table.setFillParent(true);
 		// table.setDebug(true);
 		stage.addActor(table);
-		final Skin skin = new Skin(Gdx.files.internal("skins/" + skinName + "/skin/" + skinName + "-ui.json"));
-		final Slider volumeMusicSlider = new Slider(0f, 1f, 0.1f, false, skin);
+		final Slider volumeMusicSlider = new Slider(0f, 1f, 0.1f, false, style.skin);
 		volumeMusicSlider.setValue(game.getConfigurations().getMusicVolume());
 		volumeMusicSlider.addListener(new EventListener() {
 			@Override
@@ -87,7 +83,7 @@ public class OptionsScreen implements Screen {
 				return false;
 			}
 		});
-		final CheckBox musicCheckbox = new CheckBox(null, skin);
+		final CheckBox musicCheckbox = new CheckBox(null, style.skin);
 		musicCheckbox.setChecked(game.getConfigurations().isMusicEnabled());
 		musicCheckbox.addListener(new EventListener() {
 			@Override
@@ -98,7 +94,7 @@ public class OptionsScreen implements Screen {
 			}
 		});
 
-		final Slider soundMusicSlider = new Slider(0f, 1f, 0.1f, false, skin);
+		final Slider soundMusicSlider = new Slider(0f, 1f, 0.1f, false, style.skin);
 		soundMusicSlider.setValue(game.getConfigurations().getMusicVolume());
 		soundMusicSlider.addListener(new EventListener() {
 			@Override
@@ -107,7 +103,7 @@ public class OptionsScreen implements Screen {
 				return false;
 			}
 		});
-		final CheckBox soundEffectsCheckbox = new CheckBox(null, skin);
+		final CheckBox soundEffectsCheckbox = new CheckBox(null, style.skin);
 		soundEffectsCheckbox.setChecked(game.getConfigurations().isMusicEnabled());
 		soundEffectsCheckbox.addListener(new EventListener() {
 			@Override
@@ -118,7 +114,7 @@ public class OptionsScreen implements Screen {
 			}
 		});
 
-		final TextButton backButton = new TextButton("Back", skin, "small");
+		final TextButton backButton = new TextButton("Back", style.skin);
 		backButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(final ChangeEvent event, final Actor actor) {
@@ -126,11 +122,11 @@ public class OptionsScreen implements Screen {
 			}
 		});
 
-		titleLabel = new Label("Preferences", skin);
-		volumeMusicLabel = new Label("Music Volume", skin);
-		volumeSoundLabel = new Label("Music", skin);
-		musicOnOffLabel = new Label("Sound Volume", skin);
-		soundOnOffLabel = new Label("Sound Effect", skin);
+		titleLabel = new Label("Preferences", style.skin);
+		volumeMusicLabel = new Label("Music Volume", style.skin);
+		volumeSoundLabel = new Label("Music", style.skin);
+		musicOnOffLabel = new Label("Sound Volume", style.skin);
+		soundOnOffLabel = new Label("Sound Effect", style.skin);
 
 		table.add(titleLabel).left();
 		table.row();

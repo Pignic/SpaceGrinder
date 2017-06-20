@@ -15,12 +15,12 @@ public class CockpitFactory extends ShipPartFactory {
 	@Override
 	public Entity buildPart(final World world, final Vector2 position, final float angle) {
 		final Cockpit config = (Cockpit) PART_TYPE.COCKPIT.config.get(0);
-		final Entity cockpit = new Entity();
+		final Entity entity = new Entity();
 		final float scl = 1f / SpaceGrinder.WORLD_SCALE * 15f;
-		cockpit.add(new Position(new Vector2(), new Vector2(6 * scl, 4 * scl)));
-		cockpit.add(getPhysicalComponent(world, config, position, angle));
-		cockpit.add(new Renderable(AssetManager.shipPartsTextures.get(PART_TYPE.COCKPIT.clazz).get(0),
+		entity.add(new Position(new Vector2(), new Vector2(6 * scl, 4 * scl)));
+		entity.add(getPhysicalComponent(world, entity, config, position, angle));
+		entity.add(new Renderable(AssetManager.shipPartsTextures.get(PART_TYPE.COCKPIT.clazz).get(0),
 				config.textureScale));
-		return cockpit;
+		return entity;
 	}
 }
