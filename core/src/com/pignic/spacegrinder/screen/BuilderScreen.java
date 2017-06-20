@@ -8,6 +8,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -45,6 +46,7 @@ import com.pignic.spacegrinder.system.RenderSystem;
 
 public class BuilderScreen extends AbstractScreen {
 
+	private final static float cameraSpeed = 0.5f;
 	private final SpriteBatch batch;
 	private final Camera camera;
 	private Actor currentButton;
@@ -55,6 +57,7 @@ public class BuilderScreen extends AbstractScreen {
 	private final List<Entity> entities = new ArrayList<Entity>();
 	private final SpaceGrinder game;
 	private final Texture grid;
+	private final boolean[] keyState = new boolean[256];
 	private Body lastPickedBody;
 	private Table menuTable;
 	private final Vector3 mouse = new Vector3();
@@ -81,6 +84,8 @@ public class BuilderScreen extends AbstractScreen {
 
 	private final World world;
 
+	private float zoomLevel = 1;
+
 	public BuilderScreen(final SpaceGrinder game) {
 		this.game = game;
 		engine = new PooledEngine();
@@ -97,6 +102,28 @@ public class BuilderScreen extends AbstractScreen {
 		stage = new Stage() {
 
 			@Override
+			public boolean keyDown(final int keyCode) {
+				if (!super.keyDown(keyCode)) {
+					if (keyCode == Keys.DEL) {
+						if (pickedBody != null) {
+							engine.removeEntity((Entity) pickedBody.getUserData());
+							world.destroyBody(pickedBody);
+							pickedBody = null;
+							propertiesTable.setVisible(false);
+						}
+					}
+					keyState[keyCode] = true;
+				}
+				return true;
+			}
+
+			@Override
+			public boolean keyUp(final int keyCode) {
+				keyState[keyCode] = false;
+				return super.keyUp(keyCode);
+			}
+
+			@Override
 			public boolean mouseMoved(final int screenX, final int screenY) {
 				if (!super.mouseMoved(screenX, screenY)) {
 					camera.unproject(mouse.set(screenX, screenY, 0));
@@ -109,9 +136,13 @@ public class BuilderScreen extends AbstractScreen {
 
 			@Override
 			public boolean scrolled(final int amount) {
-				rotation += Math.PI * amount / 20;
 				if (mouseJoint != null && mouseJoint.getBodyB() != null) {
+					rotation += Math.PI * amount / 20;
 					mouseJoint.getBodyB().setTransform(mouseJoint.getBodyB().getWorldCenter(), rotation);
+				} else {
+					zoomLevel += 0.1 * amount;
+					camera.viewportWidth = stage.getWidth() * zoomLevel / SpaceGrinder.WORLD_SCALE;
+					camera.viewportHeight = stage.getHeight() * zoomLevel / SpaceGrinder.WORLD_SCALE;
 				}
 				return super.scrolled(amount);
 			}
@@ -261,6 +292,7 @@ public class BuilderScreen extends AbstractScreen {
 		if (paused) {
 			return;
 		}
+		update(delta);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -275,8 +307,8 @@ public class BuilderScreen extends AbstractScreen {
 
 	@Override
 	public void resize(final int width, final int height) {
-		camera.viewportWidth = width / SpaceGrinder.WORLD_SCALE;
-		camera.viewportHeight = height / SpaceGrinder.WORLD_SCALE;
+		camera.viewportWidth = width * zoomLevel / SpaceGrinder.WORLD_SCALE;
+		camera.viewportHeight = height * zoomLevel / SpaceGrinder.WORLD_SCALE;
 		camera.update();
 		stage.getViewport().setScreenSize(width, height);
 		stage.getViewport().setWorldSize(width, height);
@@ -318,6 +350,11 @@ public class BuilderScreen extends AbstractScreen {
 		stage.addActor(menuTable = buildMenu(this));
 		stage.addActor(propertiesTable = buildProperties(this));
 		Gdx.input.setInputProcessor(stage);
+	}
+
+	private void update(final float delta) {
+		camera.position.add(((keyState[Keys.LEFT] ? -1 : 0) + (keyState[Keys.RIGHT] ? 1 : 0)) * cameraSpeed * zoomLevel,
+				((keyState[Keys.UP] ? 1 : 0) + (keyState[Keys.DOWN] ? -1 : 0)) * cameraSpeed * zoomLevel, 0);
 	}
 
 }

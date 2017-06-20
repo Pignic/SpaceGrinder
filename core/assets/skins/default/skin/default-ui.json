@@ -11,10 +11,22 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 	}
 }
 com.badlogic.gdx.graphics.Color: {
+	darkGreen: {
+		r: 0.26185668
+		g: 0.53333336
+		b: 0.11911112
+		a: 1
+	}
 	darkGrey: {
 		r: 0.13666667
 		g: 0.12436667
 		b: 0.12436667
+		a: 1
+	}
+	lightGrey: {
+		r: 0.91333336
+		g: 0.91333336
+		b: 0.91333336
 		a: 1
 	}
 }
@@ -54,6 +66,42 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		fontColor: darkGrey
 	}
 }
+com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
+	default: {
+		font: font-export
+		fontColorSelected: darkGreen
+		fontColorUnselected: darkGrey
+		selection: list-select
+		background: list
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
+	default-horizontal: {
+		background: slider
+		knob: slider-knob
+		knobBefore: slider-before
+	}
+	default-vertical: {
+		background: slider-vertical
+		knob: slider-knob
+		knobBefore: slider-vertical-before
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
+	default: {
+		background: list
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
+	default: {
+		font: font-export
+		fontColor: darkGrey
+		background: list
+		scrollStyle: default
+		listStyle: default
+		backgroundOpen: list-select
+	}
+}
 com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 	default-horizontal: {
 		knobOver: slider-knob-pressed
@@ -61,6 +109,21 @@ com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 		background: slider
 		knob: slider-knob
 		knobBefore: slider-before
+	}
+	default-vertical: {
+		knobOver: slider-knob-pressed
+		knobDown: slider-knob-pressed
+		background: slider-vertical
+		knob: slider-knob
+		knobBefore: slider-vertical-before
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle: {
+	default-horizontal: {
+		handle: slider-vertical
+	}
+	default-vertical: {
+		handle: slider
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
@@ -75,7 +138,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 	default: {
 		font: font-export
-		fontColor: darkGrey
+		fontColor: lightGrey
 		background: textfield
 		focusedBackground: textfield-selected
 	}
@@ -85,10 +148,24 @@ com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
 		label: default
 	}
 }
+com.badlogic.gdx.scenes.scene2d.ui.Touchpad$TouchpadStyle: {
+	default: {
+		background: checkbox
+		knob: slider-knob
+	}
+}
 com.badlogic.gdx.scenes.scene2d.ui.Tree$TreeStyle: {
 	default: {
 		plus: plus
 		minus: minus
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+	default: {
+		background: button
+		titleFont: font-export
+		titleFontColor: darkGrey
+		stageBackground: list
 	}
 }
 }

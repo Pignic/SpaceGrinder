@@ -29,6 +29,8 @@ public class Particle implements Component {
 
 	private float rotation = 0;
 
+	private float scale = 1;
+
 	public Particle(final EFFECT effect) {
 		if (effects.size() <= 0) {
 			effects.put(EFFECT.THRUSTER, new ParticleEffect());
@@ -55,6 +57,10 @@ public class Particle implements Component {
 		return rotation;
 	}
 
+	public float getScale() {
+		return scale;
+	}
+
 	public boolean isActive() {
 		return active;
 	}
@@ -76,6 +82,10 @@ public class Particle implements Component {
 
 	public void setRotation(final float rotation) {
 		this.rotation = rotation;
+	}
+
+	public void setScale(final float scale) {
+		this.scale = scale;
 	}
 
 	public boolean toggle() {

@@ -236,10 +236,72 @@ atlasData: {
 			tintName: null
 			name: plus
 		}
+		{
+			file: C:/WORKSPACES/SpaceGrinder/core/assets/skins/default/raw/slider-vertical.png
+			bgColor: {
+				r: 0
+				g: 0
+				b: 0
+				a: 1
+			}
+			visible: true
+			tint: null
+			tintName: null
+			name: slider-vertical
+		}
+		{
+			file: C:/WORKSPACES/SpaceGrinder/core/assets/skins/default/raw/slider-vertical-before.png
+			bgColor: {
+				r: 0
+				g: 0
+				b: 0
+				a: 1
+			}
+			visible: true
+			tint: null
+			tintName: null
+			name: slider-vertical-before
+		}
+		{
+			file: C:/WORKSPACES/SpaceGrinder/core/assets/skins/default/raw/list.png
+			bgColor: {
+				r: 0
+				g: 0
+				b: 0
+				a: 1
+			}
+			visible: true
+			tint: null
+			tintName: null
+			name: list
+		}
+		{
+			file: C:/WORKSPACES/SpaceGrinder/core/assets/skins/default/raw/list-select.png
+			bgColor: {
+				r: 0
+				g: 0
+				b: 0
+				a: 1
+			}
+			visible: true
+			tint: null
+			tintName: null
+			name: list-select
+		}
 	]
 }
 jsonData: {
 	colors: [
+		{
+			class: com.ray3k.skincomposer.data.ColorData
+			color: {
+				r: 0.26185668
+				g: 0.53333336
+				b: 0.11911112
+				a: 1
+			}
+			name: darkGreen
+		}
 		{
 			class: com.ray3k.skincomposer.data.ColorData
 			color: {
@@ -249,6 +311,16 @@ jsonData: {
 				a: 1
 			}
 			name: darkGrey
+		}
+		{
+			class: com.ray3k.skincomposer.data.ColorData
+			color: {
+				r: 0.91333336
+				g: 0.91333336
+				b: 0.91333336
+				a: 1
+			}
+			name: lightGrey
 		}
 	]
 	fonts: [
@@ -904,35 +976,35 @@ jsonData: {
 						type: com.badlogic.gdx.graphics.g2d.BitmapFont
 						name: font
 						optional: false
-						value: null
+						value: font-export
 					}
 					fontColorSelected: {
 						class: com.ray3k.skincomposer.data.StyleProperty
 						type: com.badlogic.gdx.graphics.Color
 						name: fontColorSelected
 						optional: false
-						value: null
+						value: darkGreen
 					}
 					fontColorUnselected: {
 						class: com.ray3k.skincomposer.data.StyleProperty
 						type: com.badlogic.gdx.graphics.Color
 						name: fontColorUnselected
 						optional: false
-						value: null
+						value: darkGrey
 					}
 					selection: {
 						class: com.ray3k.skincomposer.data.StyleProperty
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: selection
 						optional: false
-						value: null
+						value: list-select
 					}
 					background: {
 						class: com.ray3k.skincomposer.data.StyleProperty
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: true
-						value: null
+						value: list
 					}
 				}
 				deletable: false
@@ -949,7 +1021,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: false
-						value: null
+						value: slider
 					}
 					disabledBackground: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -963,7 +1035,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: knob
 						optional: true
-						value: null
+						value: slider-knob
 					}
 					disabledKnob: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -977,7 +1049,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: knobBefore
 						optional: true
-						value: null
+						value: slider-before
 					}
 					knobAfter: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -1013,7 +1085,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: false
-						value: null
+						value: slider-vertical
 					}
 					disabledBackground: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -1027,7 +1099,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: knob
 						optional: true
-						value: null
+						value: slider-knob
 					}
 					disabledKnob: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -1041,7 +1113,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: knobBefore
 						optional: true
-						value: null
+						value: slider-vertical-before
 					}
 					knobAfter: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -1079,7 +1151,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: true
-						value: null
+						value: list
 					}
 					corner: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -1131,14 +1203,14 @@ jsonData: {
 						type: com.badlogic.gdx.graphics.g2d.BitmapFont
 						name: font
 						optional: false
-						value: null
+						value: font-export
 					}
 					fontColor: {
 						class: com.ray3k.skincomposer.data.StyleProperty
 						type: com.badlogic.gdx.graphics.Color
 						name: fontColor
 						optional: false
-						value: null
+						value: darkGrey
 					}
 					disabledFontColor: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -1152,7 +1224,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: true
-						value: null
+						value: list
 					}
 					scrollStyle: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -1180,7 +1252,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: backgroundOpen
 						optional: true
-						value: null
+						value: list-select
 					}
 					backgroundDisabled: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -1282,21 +1354,21 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: knobOver
 						optional: true
-						value: null
+						value: slider-knob-pressed
 					}
 					knobDown: {
 						class: com.ray3k.skincomposer.data.StyleProperty
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: knobDown
 						optional: true
-						value: null
+						value: slider-knob-pressed
 					}
 					background: {
 						class: com.ray3k.skincomposer.data.StyleProperty
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: false
-						value: null
+						value: slider-vertical
 					}
 					disabledBackground: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -1310,7 +1382,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: knob
 						optional: true
-						value: null
+						value: slider-knob
 					}
 					disabledKnob: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -1324,7 +1396,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: knobBefore
 						optional: true
-						value: null
+						value: slider-vertical-before
 					}
 					knobAfter: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -1362,7 +1434,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: handle
 						optional: false
-						value: null
+						value: slider-vertical
 					}
 				}
 				deletable: false
@@ -1377,7 +1449,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: handle
 						optional: false
-						value: null
+						value: slider
 					}
 				}
 				deletable: false
@@ -1544,7 +1616,7 @@ jsonData: {
 						type: com.badlogic.gdx.graphics.Color
 						name: fontColor
 						optional: false
-						value: darkGrey
+						value: lightGrey
 					}
 					focusedFontColor: {
 						class: com.ray3k.skincomposer.data.StyleProperty
@@ -1655,14 +1727,14 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: true
-						value: null
+						value: checkbox
 					}
 					knob: {
 						class: com.ray3k.skincomposer.data.StyleProperty
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: knob
 						optional: true
-						value: null
+						value: slider-knob
 					}
 				}
 				deletable: false
@@ -1724,28 +1796,28 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: true
-						value: null
+						value: button
 					}
 					titleFont: {
 						class: com.ray3k.skincomposer.data.StyleProperty
 						type: com.badlogic.gdx.graphics.g2d.BitmapFont
 						name: titleFont
 						optional: false
-						value: null
+						value: font-export
 					}
 					titleFontColor: {
 						class: com.ray3k.skincomposer.data.StyleProperty
 						type: com.badlogic.gdx.graphics.Color
 						name: titleFontColor
 						optional: true
-						value: null
+						value: darkGrey
 					}
 					stageBackground: {
 						class: com.ray3k.skincomposer.data.StyleProperty
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: stageBackground
 						optional: true
-						value: null
+						value: list
 					}
 				}
 				deletable: false

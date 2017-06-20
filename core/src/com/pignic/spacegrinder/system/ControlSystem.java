@@ -28,22 +28,23 @@ public class ControlSystem extends IteratingSystem {
 	protected void processEntity(final Entity entity, final float deltaTime) {
 		final Controllable c = Mapper.controllable.get(entity);
 		for (final Binding binding : c.getBindings()) {
-			final Physical p = Mapper.physical.get(entity);
-			final Particle part = Mapper.particle.get(entity);
+			final Physical physical = Mapper.physical.get(entity);
+			final Particle particle = Mapper.particle.get(entity);
 			if (Gdx.input.isKeyPressed(binding.getKeycode())) {
 				if (c.getAction().equals(ACTION.THRUST)) {
 					// p.getBody().applyLinearImpulse(
 					// p.getBody().getWorldVector(new Vector2(1, 0).scl(binding.getAmount() / 100f)),
 					// p.getBody().getWorldCenter(), true);
-					p.getBody().applyForceToCenter(
-							p.getBody().getWorldVector(new Vector2(1, 0).scl(binding.getAmount())), false);
-					if (part != null) {
-						part.setActive(true);
+					physical.getBody().applyForceToCenter(
+							physical.getBody().getWorldVector(new Vector2(1, 0).scl(binding.getAmount())), false);
+					if (particle != null) {
+						particle.setActive(true);
+						particle.setScale(binding.getAmount() / c.getMaxAmout() * 3);
 					}
 				}
 			} else {
 				if (c.getAction().equals(ACTION.THRUST)) {
-					part.setActive(false);
+					particle.setActive(false);
 				}
 			}
 		}

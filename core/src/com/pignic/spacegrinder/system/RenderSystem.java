@@ -46,6 +46,8 @@ public class RenderSystem extends SortedIteratingSystem {
 			final ScaledNumericValue angle = emitter.getAngle();
 			angle.setLow((float) Math.toDegrees(position.getAngle() + particle.getRotation()));
 			angle.setHigh((float) Math.toDegrees(position.getAngle() + particle.getRotation()));
+			emitter.getScale().setHigh(particle.getScale());
+			emitter.getScale().setLow(particle.getScale());
 			emitter.draw(batch, deltaTime);
 		}
 		if (renderable != null) {

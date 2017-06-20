@@ -144,10 +144,15 @@ public class Controllable extends Configurable implements Component {
 			}
 		});
 		table.add(addButton);
+		table.row();
 		for (final Binding binding : bindings) {
 			addBindingRow(table, binding);
 		}
 		return table;
+	}
+
+	public float getMaxAmout() {
+		return maxAmout;
 	}
 
 }
