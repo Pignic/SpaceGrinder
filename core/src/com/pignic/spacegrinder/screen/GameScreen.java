@@ -2,6 +2,7 @@ package com.pignic.spacegrinder.screen;
 
 import java.util.List;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
@@ -62,6 +63,11 @@ public class GameScreen extends AbstractScreen {
 	@Override
 	public void dispose() {
 		batch.dispose();
+	}
+
+	@Override
+	public Engine getEngine() {
+		return engine;
 	}
 
 	@Override

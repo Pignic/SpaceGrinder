@@ -3,6 +3,7 @@ package com.pignic.spacegrinder.component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.Input;
@@ -19,8 +20,9 @@ import com.pignic.spacegrinder.screen.AbstractScreen;
 
 public class Controllable extends Configurable implements Component {
 
-	public static enum ACTION {
-		SHOOT, THRUST
+	public static abstract class Action implements Callable<Object> {
+		public Binding binding;
+		public Controllable controllable;
 	}
 
 	public static class Binding {
@@ -43,28 +45,31 @@ public class Controllable extends Configurable implements Component {
 		}
 	}
 
-	private final ACTION action;
+	private final Action action;
 
 	private final List<Binding> bindings = new ArrayList<Binding>(1);
 
 	private float maxAmout = 1;
 
-	public Controllable(final ACTION action, final float maxAmount, final Binding... bindings) {
+	public Controllable(final Action action, final float maxAmount, final Binding... bindings) {
 		maxAmout = maxAmount;
 		this.action = action;
+		action.controllable = this;
 		this.bindings.addAll(Arrays.asList(bindings));
 	}
 
-	public Controllable(final ACTION action, final float amount, final int... keycodes) {
+	public Controllable(final Action action, final float amount, final int... keycodes) {
 		this.action = action;
+		action.controllable = this;
 		maxAmout = amount;
 		for (final int keycode : keycodes) {
 			bindings.add(new Binding(keycode, amount));
 		}
 	}
 
-	public Controllable(final int keycode, final ACTION action, final float amount) {
+	public Controllable(final int keycode, final Action action, final float amount) {
 		this.action = action;
+		action.controllable = this;
 		maxAmout = amount;
 		bindings.add(new Binding(keycode, amount));
 	}
@@ -114,7 +119,7 @@ public class Controllable extends Configurable implements Component {
 		table.row();
 	}
 
-	public ACTION getAction() {
+	public Action getAction() {
 		return action;
 	}
 

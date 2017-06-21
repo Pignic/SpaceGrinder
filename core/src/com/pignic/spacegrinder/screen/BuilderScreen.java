@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
@@ -39,10 +40,13 @@ import com.pignic.spacegrinder.factory.basic.ShipPartFactory;
 import com.pignic.spacegrinder.factory.basic.StructureFactory;
 import com.pignic.spacegrinder.factory.complex.ShipFactory;
 import com.pignic.spacegrinder.factory.complex.ShipFactory.PART_TYPE;
+import com.pignic.spacegrinder.system.CollisionSystem;
 import com.pignic.spacegrinder.system.ControlSystem;
 import com.pignic.spacegrinder.system.LightSystem;
 import com.pignic.spacegrinder.system.PhysicSystem;
+import com.pignic.spacegrinder.system.ProjectileSystem;
 import com.pignic.spacegrinder.system.RenderSystem;
+import com.pignic.spacegrinder.system.TimerSystem;
 
 import box2dLight.RayHandler;
 
@@ -102,6 +106,9 @@ public class BuilderScreen extends AbstractScreen {
 		engine.addSystem(new PhysicSystem(world));
 		engine.addSystem(new RenderSystem(batch));
 		engine.addSystem(new LightSystem(batch, lightsRayHandler));
+		engine.addSystem(new ProjectileSystem(world, engine));
+		engine.addSystem(new TimerSystem());
+		engine.addSystem(new CollisionSystem(world, engine));
 		grid = new Texture(Constants.TEXTURE_PATH + "grid.png");
 		originBody = world.createBody(new BodyDef());
 		stage = new Stage() {
@@ -280,6 +287,11 @@ public class BuilderScreen extends AbstractScreen {
 	@Override
 	public void dispose() {
 		batch.dispose();
+	}
+
+	@Override
+	public Engine getEngine() {
+		return engine;
 	}
 
 	@Override

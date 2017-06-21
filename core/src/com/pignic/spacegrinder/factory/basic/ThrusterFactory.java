@@ -6,9 +6,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.pignic.spacegrinder.AssetManager;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Controllable;
-import com.pignic.spacegrinder.component.Controllable.ACTION;
+import com.pignic.spacegrinder.component.Controllable.Action;
 import com.pignic.spacegrinder.component.Particle;
 import com.pignic.spacegrinder.component.Particle.EFFECT;
+import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.component.Position;
 import com.pignic.spacegrinder.component.Renderable;
 import com.pignic.spacegrinder.factory.complex.ShipFactory.PART_TYPE;
@@ -21,11 +22,24 @@ public class ThrusterFactory extends ShipPartFactory {
 		final Entity entity = new Entity();
 		final float scl = 1 / SpaceGrinder.WORLD_SCALE * 5;
 		entity.add(new Position(new Vector2(), new Vector2(6 * scl, 4 * scl), 0, 1));
-		entity.add(getPhysicalComponent(world, entity, config, position, angle));
-		entity.add(new Controllable(ACTION.THRUST, config.maxThrust, keycodes));
+		final Physical physical = getPhysicalComponent(world, entity, config, position, angle);
+		entity.add(physical);
+		final Particle particle = new Particle(EFFECT.THRUSTER);
+		entity.add(new Controllable(new Action() {
+			@Override
+			public Object call() throws Exception {
+				physical.getBody().applyForceToCenter(
+						physical.getBody().getWorldVector(new Vector2(1, 0).scl(binding.getAmount())), false);
+				if (particle != null) {
+					particle.setActive(true);
+					particle.setScale(binding.getAmount() / controllable.getMaxAmout() * 3);
+				}
+				return null;
+			}
+
+		}, config.maxThrust, keycodes));
 		entity.add(new Renderable(AssetManager.shipPartsTextures.get(PART_TYPE.THRUSTER.clazz).get(0),
 				config.textureScale));
-		final Particle particle = new Particle(EFFECT.THRUSTER);
 		particle.setRotation((float) Math.PI);
 		entity.add(particle);
 		return entity;

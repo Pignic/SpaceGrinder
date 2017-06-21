@@ -13,6 +13,8 @@ public class SpaceGrinder extends Game {
 		BUILDER, GAME, HOME, MENU, OPTIONS
 	}
 
+	public static SpaceGrinder game;
+
 	public static final float WORLD_SCALE = 10;
 
 	private BuilderScreen builderScreen;
@@ -24,6 +26,7 @@ public class SpaceGrinder extends Game {
 
 	@Override
 	public void create() {
+		game = this;
 		builderScreen = new BuilderScreen(this);
 		gameScreen = new GameScreen(this);
 		homeScreen = new HomeScreen(this);

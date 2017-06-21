@@ -15,6 +15,14 @@
 			}
 		],
 		cost: 1000,
-		hitpoints: 600
+		hitpoints: 600,
+		// Specific weapon
+		rotate: false,
+		damage: 10,
+		projectileSpeed: 10,
+		reloadTime: 100,
+		stream: false,
+		range: 30,
+		type: "KINETIC"
 	}
 ]

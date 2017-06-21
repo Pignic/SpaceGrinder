@@ -1,5 +1,6 @@
 package com.pignic.spacegrinder.screen;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -34,7 +35,11 @@ public class OptionsScreen extends AbstractScreen {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
+	}
 
+	@Override
+	public Engine getEngine() {
+		return null;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.pignic.spacegrinder.screen;
 
+import com.badlogic.ashley.core.Engine;
 import com.pignic.spacegrinder.SpaceGrinder;
 
 public class MenuScreen extends AbstractScreen {
@@ -14,6 +15,11 @@ public class MenuScreen extends AbstractScreen {
 	public void dispose() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public Engine getEngine() {
+		return null;
 	}
 
 	@Override
