@@ -15,6 +15,9 @@
 			}
 		],
 		cost: 1000,
-		hitpoints: 600
+		hitpoints: 600,
+		// Specific for lights
+		maxArc: 90,
+		maxRange: 100
 	}
 ]

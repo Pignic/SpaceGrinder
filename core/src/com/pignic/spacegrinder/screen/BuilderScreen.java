@@ -9,7 +9,6 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -41,14 +40,17 @@ import com.pignic.spacegrinder.factory.basic.StructureFactory;
 import com.pignic.spacegrinder.factory.complex.ShipFactory;
 import com.pignic.spacegrinder.factory.complex.ShipFactory.PART_TYPE;
 import com.pignic.spacegrinder.system.ControlSystem;
+import com.pignic.spacegrinder.system.LightSystem;
 import com.pignic.spacegrinder.system.PhysicSystem;
 import com.pignic.spacegrinder.system.RenderSystem;
+
+import box2dLight.RayHandler;
 
 public class BuilderScreen extends AbstractScreen {
 
 	private final static float cameraSpeed = 0.5f;
 	private final SpriteBatch batch;
-	private final Camera camera;
+	private final OrthographicCamera camera;
 	private Actor currentButton;
 	private Entity currentPiece;
 	private ShipFactory.PART_TYPE currentType;
@@ -59,6 +61,7 @@ public class BuilderScreen extends AbstractScreen {
 	private final Texture grid;
 	private final boolean[] keyState = new boolean[256];
 	private Body lastPickedBody;
+	private RayHandler lightsRayHandler;
 	private Table menuTable;
 	private final Vector3 mouse = new Vector3();
 	QueryCallback mouseClickCallback = new QueryCallback() {
@@ -94,9 +97,11 @@ public class BuilderScreen extends AbstractScreen {
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / SpaceGrinder.WORLD_SCALE,
 				Gdx.graphics.getHeight() / SpaceGrinder.WORLD_SCALE);
 		batch = new SpriteBatch();
+		lightsRayHandler = new RayHandler(world);
 		engine.addSystem(new ControlSystem());
 		engine.addSystem(new PhysicSystem(world));
 		engine.addSystem(new RenderSystem(batch));
+		engine.addSystem(new LightSystem(batch, lightsRayHandler));
 		grid = new Texture(Constants.TEXTURE_PATH + "grid.png");
 		originBody = world.createBody(new BodyDef());
 		stage = new Stage() {
@@ -295,7 +300,9 @@ public class BuilderScreen extends AbstractScreen {
 		update(delta);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
+		lightsRayHandler.setCombinedMatrix(camera);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		lightsRayHandler.updateAndRender();
 		batch.begin();
 		RenderHelper.drawTiledParalax(grid, batch, 1, 1, camera);
 		engine.update(delta);

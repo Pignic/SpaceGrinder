@@ -132,7 +132,7 @@ public class Controllable extends Configurable implements Component {
 
 	@Override
 	public Table getConfiguration(final Table table) {
-		final Label title = new Label("Controls", AbstractScreen.style.skin);
+		final Label title = new Label("Controls", AbstractScreen.style.skin, "light");
 		table.add(title).row();
 		final TextButton addButton = new TextButton("+", AbstractScreen.style.skin);
 		addButton.addListener(new ChangeListener() {
