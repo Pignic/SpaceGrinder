@@ -2,7 +2,8 @@ package com.pignic.spacegrinder.pojo;
 
 public class Weapon extends ShipPart {
 	public float damage;
-	public float projectileSpeed;
+	public float projectileImpulse;
+	public float projectileSize;
 	public float range;
 	public float reloadTime;
 	public boolean rotate;

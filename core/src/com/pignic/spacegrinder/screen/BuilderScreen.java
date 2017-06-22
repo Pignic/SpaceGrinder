@@ -55,6 +55,7 @@ public class BuilderScreen extends AbstractScreen {
 	private final static float cameraSpeed = 0.5f;
 	private final SpriteBatch batch;
 	private final OrthographicCamera camera;
+	private ControlSystem controlSystem;
 	private Actor currentButton;
 	private Entity currentPiece;
 	private ShipFactory.PART_TYPE currentType;
@@ -63,7 +64,6 @@ public class BuilderScreen extends AbstractScreen {
 	private final List<Entity> entities = new ArrayList<Entity>();
 	private final SpaceGrinder game;
 	private final Texture grid;
-	private final boolean[] keyState = new boolean[256];
 	private Body lastPickedBody;
 	private RayHandler lightsRayHandler;
 	private Table menuTable;
@@ -85,6 +85,7 @@ public class BuilderScreen extends AbstractScreen {
 	private Body pickedBody;
 	private Table propertiesTable;
 	private float rotation = 0;
+
 	private boolean runningSimulation = false;
 
 	private final Stage stage;
@@ -102,7 +103,8 @@ public class BuilderScreen extends AbstractScreen {
 				Gdx.graphics.getHeight() / SpaceGrinder.WORLD_SCALE);
 		batch = new SpriteBatch();
 		lightsRayHandler = new RayHandler(world);
-		engine.addSystem(new ControlSystem());
+		controlSystem = new ControlSystem();
+		engine.addSystem(controlSystem);
 		engine.addSystem(new PhysicSystem(world));
 		engine.addSystem(new RenderSystem(batch));
 		engine.addSystem(new LightSystem(batch, lightsRayHandler));
@@ -124,14 +126,14 @@ public class BuilderScreen extends AbstractScreen {
 							propertiesTable.setVisible(false);
 						}
 					}
-					keyState[keyCode] = true;
+					controlSystem.setKeyState(keyCode, true);
 				}
 				return true;
 			}
 
 			@Override
 			public boolean keyUp(final int keyCode) {
-				keyState[keyCode] = false;
+				controlSystem.setKeyState(keyCode, false);
 				return super.keyUp(keyCode);
 			}
 
@@ -372,8 +374,12 @@ public class BuilderScreen extends AbstractScreen {
 	}
 
 	private void update(final float delta) {
-		camera.position.add(((keyState[Keys.LEFT] ? -1 : 0) + (keyState[Keys.RIGHT] ? 1 : 0)) * cameraSpeed * zoomLevel,
-				((keyState[Keys.UP] ? 1 : 0) + (keyState[Keys.DOWN] ? -1 : 0)) * cameraSpeed * zoomLevel, 0);
+		camera.position.add(
+				((controlSystem.isPressed(Keys.LEFT) ? -1 : 0) + (controlSystem.isPressed(Keys.RIGHT) ? 1 : 0))
+						* cameraSpeed * zoomLevel,
+				((controlSystem.isPressed(Keys.UP) ? 1 : 0) + (controlSystem.isPressed(Keys.DOWN) ? -1 : 0))
+						* cameraSpeed * zoomLevel,
+				0);
 	}
 
 }

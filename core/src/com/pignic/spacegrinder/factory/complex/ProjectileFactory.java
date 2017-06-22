@@ -14,7 +14,7 @@ import com.pignic.spacegrinder.component.Projectile;
 public class ProjectileFactory {
 
 	public static Entity buildProjectile(final World world, final Body emmiter, final float speed, final float range,
-			final float damage) {
+			final float damage, final float projectileSize) {
 		final Entity entity = new Entity();
 		final BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
@@ -23,7 +23,7 @@ public class ProjectileFactory {
 		bodyDef.angle = emmiter.getAngle();
 		bodyDef.bullet = true;
 		final CircleShape shape = new CircleShape();
-		shape.setRadius(0.1f);
+		shape.setRadius(projectileSize);
 		final FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.density = 1;
 		fixtureDef.shape = shape;

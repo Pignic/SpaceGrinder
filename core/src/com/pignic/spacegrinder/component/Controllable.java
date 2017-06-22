@@ -10,6 +10,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -49,7 +51,11 @@ public class Controllable extends Configurable implements Component {
 
 	private final List<Binding> bindings = new ArrayList<Binding>(1);
 
+	private Action cancelAction = null;
+
 	private float maxAmout = 1;
+
+	private Action onPress;
 
 	public Controllable(final Action action, final float maxAmount, final Binding... bindings) {
 		maxAmout = maxAmount;
@@ -83,12 +89,13 @@ public class Controllable extends Configurable implements Component {
 	private void addBindingRow(final Table table, final Binding binding) {
 		final TextField input = new TextField(binding.keycode <= 0 ? "" : Input.Keys.toString(binding.keycode),
 				AbstractScreen.style.skin);
-		input.setMaxLength(1);
 		input.setUserObject(binding);
-		input.addListener(new ChangeListener() {
+		input.addListener(new InputListener() {
 			@Override
-			public void changed(final ChangeEvent event, final Actor actor) {
-				binding.keycode = Input.Keys.valueOf(((TextField) actor).getText().toUpperCase());
+			public boolean keyDown(final InputEvent event, final int keycode) {
+				binding.keycode = keycode;
+				input.setText(Input.Keys.toString(keycode));
+				return true;
 			}
 		});
 		final Slider scaleSlider = new Slider(0f, maxAmout, maxAmout / 100f, false, AbstractScreen.style.skin);
@@ -113,7 +120,7 @@ public class Controllable extends Configurable implements Component {
 				}
 			}
 		});
-		table.add(input).width(20);
+		table.add(input).width(100);
 		table.add(scaleSlider);
 		table.add(removeButton);
 		table.row();
@@ -133,6 +140,10 @@ public class Controllable extends Configurable implements Component {
 
 	public int getBindingsCount() {
 		return bindings.size();
+	}
+
+	public Action getCancelAction() {
+		return cancelAction;
 	}
 
 	@Override
@@ -158,6 +169,19 @@ public class Controllable extends Configurable implements Component {
 
 	public float getMaxAmout() {
 		return maxAmout;
+	}
+
+	public Action getOnPress() {
+		return onPress;
+	}
+
+	public Controllable setCancelAction(final Action cancelAction) {
+		this.cancelAction = cancelAction;
+		return this;
+	}
+
+	public void setOnPress(final Action onPress) {
+		this.onPress = onPress;
 	}
 
 }

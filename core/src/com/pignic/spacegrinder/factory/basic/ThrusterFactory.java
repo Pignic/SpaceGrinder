@@ -37,7 +37,13 @@ public class ThrusterFactory extends ShipPartFactory {
 				return null;
 			}
 
-		}, config.maxThrust, keycodes));
+		}, config.maxThrust, keycodes).setCancelAction(new Action() {
+			@Override
+			public Object call() throws Exception {
+				entity.getComponent(Particle.class).setActive(false);
+				return null;
+			}
+		}));
 		entity.add(new Renderable(AssetManager.shipPartsTextures.get(PART_TYPE.THRUSTER.clazz).get(0),
 				config.textureScale));
 		particle.setRotation((float) Math.PI);

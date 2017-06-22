@@ -19,10 +19,11 @@
 		// Specific weapon
 		rotate: false,
 		damage: 10,
-		projectileSpeed: 10,
+		projectileImpulse: 10,
 		reloadTime: 100,
 		stream: false,
 		range: 30,
+		projectileSize: 0.1,
 		type: "KINETIC"
 	}
 ]

@@ -36,7 +36,7 @@ public class WeaponFactory extends ShipPartFactory {
 				if (timer.done()) {
 					((AbstractScreen) SpaceGrinder.game.getScreen()).getEngine()
 							.addEntity(ProjectileFactory.buildProjectile(world, physical.getBody(),
-									config.projectileSpeed, config.range, config.damage));
+									config.projectileImpulse, config.range, config.damage, config.projectileSize));
 					timer.reset();
 				}
 				return null;
