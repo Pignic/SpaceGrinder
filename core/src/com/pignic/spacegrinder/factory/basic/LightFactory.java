@@ -7,7 +7,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.pignic.spacegrinder.AssetManager;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.LightSource;
-import com.pignic.spacegrinder.component.LightSource.TYPE;
 import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.component.Position;
 import com.pignic.spacegrinder.component.Renderable;
@@ -26,7 +25,7 @@ public class LightFactory extends ShipPartFactory {
 		entity.add(physical);
 		entity.add(
 				new Renderable(AssetManager.shipPartsTextures.get(PART_TYPE.LIGHT.clazz).get(0), config.textureScale));
-		entity.add(new LightSource(TYPE.Cone, new Color(Color.WHITE), physical.getBody(), config.maxRange,
+		entity.add(new LightSource(new Color(Color.WHITE), physical.getBody(), config.maxRange,
 				(float) (Math.toRadians(config.maxArc) / 2f), config.maxRange,
 				(float) (Math.toRadians(config.maxArc) / 2f)));
 		return entity;

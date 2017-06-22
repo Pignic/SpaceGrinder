@@ -5,7 +5,7 @@
 		textureScale: 1,
 		density: 10,
 		shape: [
-			{x: 0, y: -15}, {x: 7, y: -10}, {x: 7, y: 10}, {x: 0, y: 15}
+			{x: -3, y: -15}, {x: 3, y: -10}, {x: 3, y: 10}, {x: -3, y: 15}
 		],
 		materials: [
 			{

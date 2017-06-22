@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.RenderHelper;
 import com.pignic.spacegrinder.SpaceGrinder;
@@ -36,6 +37,7 @@ public class GameScreen extends AbstractScreen {
 	private final Texture parallax2;
 	private boolean paused = true;
 	private final Entity ship;
+	private final Stage stage;
 	private final World world;
 
 	public GameScreen(final SpaceGrinder game) {
@@ -47,7 +49,8 @@ public class GameScreen extends AbstractScreen {
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / SpaceGrinder.WORLD_SCALE,
 				Gdx.graphics.getHeight() / SpaceGrinder.WORLD_SCALE);
 		batch = new SpriteBatch();
-		engine.addSystem(new ControlSystem());
+		final ControlSystem controlSystem = new ControlSystem();
+		engine.addSystem(controlSystem);
 		engine.addSystem(new PhysicSystem(world));
 		engine.addSystem(new RenderSystem(batch));
 		final List<Entity> entities = ShipFactory.buildShip(world);
@@ -58,6 +61,22 @@ public class GameScreen extends AbstractScreen {
 		background = new Texture(Constants.TEXTURE_PATH + "bg.png");
 		parallax1 = new Texture(Constants.TEXTURE_PATH + "parallax1.png");
 		parallax2 = new Texture(Constants.TEXTURE_PATH + "parallax2.png");
+		stage = new Stage() {
+
+			@Override
+			public boolean keyDown(final int keyCode) {
+				if (!super.keyDown(keyCode)) {
+					controlSystem.setKeyState(keyCode, true);
+				}
+				return true;
+			}
+
+			@Override
+			public boolean keyUp(final int keyCode) {
+				controlSystem.setKeyState(keyCode, false);
+				return super.keyUp(keyCode);
+			}
+		};
 	}
 
 	@Override
@@ -86,7 +105,6 @@ public class GameScreen extends AbstractScreen {
 			return;
 		}
 		camera.update();
-		// batch.setTransformMatrix(camera.view);
 		batch.setProjectionMatrix(camera.combined);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		final Body shipBody = ship.getComponent(Physical.class).getBody();
@@ -98,6 +116,8 @@ public class GameScreen extends AbstractScreen {
 		engine.update(delta);
 		batch.end();
 		debugRenderer.render(world, camera.combined);
+		stage.act(delta);
+		stage.draw();
 	}
 
 	@Override
@@ -105,6 +125,9 @@ public class GameScreen extends AbstractScreen {
 		camera.viewportWidth = width / SpaceGrinder.WORLD_SCALE;
 		camera.viewportHeight = height / SpaceGrinder.WORLD_SCALE;
 		camera.update();
+		stage.getViewport().setScreenSize(width, height);
+		stage.getViewport().setWorldSize(width, height);
+		stage.getViewport().apply(true);
 	}
 
 	@Override
@@ -115,6 +138,8 @@ public class GameScreen extends AbstractScreen {
 	@Override
 	public void show() {
 		paused = false;
+		stage.clear();
+		Gdx.input.setInputProcessor(stage);
 	}
 
 }

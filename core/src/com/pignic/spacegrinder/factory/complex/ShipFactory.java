@@ -109,19 +109,20 @@ public class ShipFactory {
 		final Physical physical = cockpit.getComponent(Physical.class);
 		final float scl = 1f / SpaceGrinder.WORLD_SCALE * 10f;
 		final Entity shipPartA = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(-2.5f * scl, 1.0f * scl), 0, Input.Keys.Z);
+				new Vector2(-6.7f * scl, 1.5f * scl), 0, Input.Keys.Z);
 		final Entity shipPartB = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(-2.5f * scl, -1.0f * scl), 0, Input.Keys.Z);
+				new Vector2(-6.7f * scl, -1.5f * scl), 0, Input.Keys.Z);
 		final Entity shipPartD = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(7.8f * scl, 0f * scl), (float) Math.PI, Input.Keys.S);
+				new Vector2(6.1f * scl, 0f * scl), (float) Math.PI, Input.Keys.S);
+
 		final Entity shipPartC = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(3.5f * scl, -3.7f * scl), (float) Math.PI / 2, Input.Keys.Q, Input.Keys.A);
+				new Vector2(0.5f * scl, -4.5f * scl), (float) Math.PI / 2, Input.Keys.Q, Input.Keys.A);
 		final Entity shipPartE = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(3.5f * scl, 3.7f * scl), (float) (3 * Math.PI / 2), Input.Keys.D, Input.Keys.E);
+				new Vector2(0.5f * scl, 4.5f * scl), (float) (3 * Math.PI / 2), Input.Keys.D, Input.Keys.E);
 		final Entity shipPartF = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(1.0f * scl, -3.5f * scl), (float) Math.PI / 2, Input.Keys.A, Input.Keys.D);
+				new Vector2(-2.5f * scl, -4.5f * scl), (float) Math.PI / 2, Input.Keys.A, Input.Keys.D);
 		final Entity shipPartG = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(1.0f * scl, 3.5f * scl), (float) (3 * Math.PI / 2), Input.Keys.E, Input.Keys.Q);
+				new Vector2(-2.5f * scl, 4.5f * scl), (float) (3 * Math.PI / 2), Input.Keys.E, Input.Keys.Q);
 		final Entity structureA = StructureFactory.build(world, physical, shipPartA.getComponent(Physical.class));
 		final Entity structureB = StructureFactory.build(world, physical, shipPartB.getComponent(Physical.class));
 		final Entity structureC = StructureFactory.build(world, physical, shipPartC.getComponent(Physical.class));

@@ -25,7 +25,7 @@ public class PhysicSystem extends IteratingSystem {
 
 	@Override
 	protected void processEntity(final Entity entity, final float deltaTime) {
-		Mapper.position.get(entity).setScaled(Mapper.physical.get(entity).getBody().getWorldCenter(),
+		Mapper.position.get(entity).setScaled(Mapper.physical.get(entity).getBody().getPosition(),
 				SpaceGrinder.WORLD_SCALE);
 		Mapper.position.get(entity).setAngle(Mapper.physical.get(entity).getBody().getAngle());
 	}

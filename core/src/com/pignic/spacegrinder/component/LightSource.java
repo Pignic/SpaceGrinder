@@ -12,15 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.pignic.spacegrinder.screen.AbstractScreen;
 
 import box2dLight.ConeLight;
-import box2dLight.PointLight;
 import box2dLight.PositionalLight;
 import box2dLight.RayHandler;
 
 public class LightSource extends Configurable implements Component {
-
-	public static enum TYPE {
-		Cone, Point
-	}
 
 	private float angle;
 
@@ -32,7 +27,7 @@ public class LightSource extends Configurable implements Component {
 
 	private final Color color;
 
-	private PositionalLight light;
+	private ConeLight light;
 
 	private final float maxArc;
 
@@ -42,27 +37,23 @@ public class LightSource extends Configurable implements Component {
 
 	private final float range;
 
-	private final TYPE type;
-
-	public LightSource(final TYPE type, final Color color, final Body body, final float range, final float arc,
-			final float maxRange, final float maxArc) {
-		this(type, color, range, maxRange, maxArc);
+	public LightSource(final Color color, final Body body, final float range, final float arc, final float maxRange,
+			final float maxArc) {
+		this(color, range, maxRange, maxArc);
 		this.body = body;
 		this.arc = arc;
 	}
 
-	private LightSource(final TYPE type, final Color color, final float range, final float maxRange,
-			final float maxArc) {
-		this.type = type;
+	private LightSource(final Color color, final float range, final float maxRange, final float maxArc) {
 		this.color = color;
 		this.range = range;
 		this.maxArc = maxArc;
 		this.maxRange = maxRange;
 	}
 
-	public LightSource(final TYPE type, final Color color, final float range, final Vector2 position, final float angle,
-			final float arc, final float maxRange, final float maxArc) {
-		this(type, color, range, maxRange, maxArc);
+	public LightSource(final Color color, final float range, final Vector2 position, final float angle, final float arc,
+			final float maxRange, final float maxArc) {
+		this(color, range, maxRange, maxArc);
 		this.angle = angle;
 		this.position = position;
 		this.arc = arc;
@@ -73,31 +64,13 @@ public class LightSource extends Configurable implements Component {
 			return light;
 		}
 		if (body != null) {
-			switch (type) {
-			case Cone:
-				light = new ConeLight(rayHandler, (int) Math.ceil((float) (arc / (Math.PI / 48d))), color, range,
-						body.getWorldCenter().x, body.getWorldCenter().y, (float) Math.toDegrees(body.getAngle()),
-						(float) Math.toDegrees(arc));
-				break;
-			case Point:
-				light = new PointLight(rayHandler, 48, color, range, body.getWorldCenter().x, body.getWorldCenter().y);
-				break;
-			default:
-				break;
-			}
+			light = new ConeLight(rayHandler, (int) Math.ceil((float) (arc / (Math.PI / 48d))), color, range,
+					body.getWorldCenter().x, body.getWorldCenter().y, (float) Math.toDegrees(body.getAngle()),
+					(float) Math.toDegrees(arc));
 			light.attachToBody(body);
 		} else {
-			switch (type) {
-			case Cone:
-				light = new ConeLight(rayHandler, (int) Math.ceil((float) (arc / (Math.PI / 48d))), color, range,
-						position.x, position.y, (float) Math.toDegrees(angle), (float) Math.toDegrees(arc));
-				break;
-			case Point:
-				light = new PointLight(rayHandler, 48, color, range, position.x, position.y);
-				break;
-			default:
-				break;
-			}
+			light = new ConeLight(rayHandler, (int) Math.ceil((float) (arc / (Math.PI / 48d))), color, range,
+					position.x, position.y, (float) Math.toDegrees(angle), (float) Math.toDegrees(arc));
 		}
 		built = true;
 		return light;
@@ -161,6 +134,20 @@ public class LightSource extends Configurable implements Component {
 		});
 		table.add(blueLabel);
 		table.add(blueSlider).row();
+
+		final Label arcLabel = new Label("Arc", AbstractScreen.style.skin, "light");
+		final Slider arcSlider = new Slider(0f, maxArc, maxArc / 100f, false, AbstractScreen.style.skin);
+		arcSlider.setValue(arc);
+		arcSlider.addListener(new EventListener() {
+			@Override
+			public boolean handle(final Event event) {
+				light.setConeDegree((float) Math.toDegrees(arcSlider.getValue()));
+				arc = arcSlider.getValue();
+				return true;
+			}
+		});
+		table.add(arcLabel);
+		table.add(arcSlider).row();
 		return table;
 	}
 
