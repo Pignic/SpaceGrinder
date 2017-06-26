@@ -80,10 +80,9 @@ public class Controllable extends Configurable implements Component {
 		bindings.add(new Binding(keycode, amount));
 	}
 
-	public Binding addBinding(final int keycode, final float amount) {
-		final Binding b = new Binding(keycode, amount);
-		bindings.add(b);
-		return b;
+	public Controllable addBinding(final int keycode, final float amount) {
+		bindings.add(new Binding(keycode, amount));
+		return this;
 	}
 
 	private void addBindingRow(final Table table, final Binding binding) {

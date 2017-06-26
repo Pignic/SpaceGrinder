@@ -22,7 +22,7 @@
 		deflection: [
 			{
 				type: "LIGHT",
-				factor: 1
+				factor: 0.5
 			}
 		]
 	},{
@@ -48,7 +48,7 @@
 		deflection: [
 			{
 				type: "LIGHT",
-				factor: 1
+				factor: 0.5
 			}
 		]
 	}

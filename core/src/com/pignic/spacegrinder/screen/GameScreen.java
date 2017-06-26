@@ -23,6 +23,7 @@ import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.factory.complex.ShipFactory;
 import com.pignic.spacegrinder.system.CollisionSystem;
 import com.pignic.spacegrinder.system.ControlSystem;
+import com.pignic.spacegrinder.system.DurabilitySystem;
 import com.pignic.spacegrinder.system.LightSystem;
 import com.pignic.spacegrinder.system.PhysicSystem;
 import com.pignic.spacegrinder.system.ProjectileSystem;
@@ -43,7 +44,7 @@ public class GameScreen extends AbstractScreen {
 	private final Texture parallax1;
 	private final Texture parallax2;
 	private boolean paused = true;
-	private final Entity ship;
+	private Entity ship;
 	private final Stage stage;
 	private final World world;
 
@@ -65,11 +66,8 @@ public class GameScreen extends AbstractScreen {
 		engine.addSystem(new ProjectileSystem(world, engine));
 		engine.addSystem(new TimerSystem(engine));
 		engine.addSystem(new CollisionSystem(world, engine));
-		final List<Entity> entities = ShipFactory.buildShip(world);
-		ship = entities.get(0);
-		for (final Entity entity : entities) {
-			engine.addEntity(entity);
-		}
+		engine.addSystem(new DurabilitySystem(world, engine));
+
 		background = new Texture(Constants.TEXTURE_PATH + "bg.png");
 		parallax1 = new Texture(Constants.TEXTURE_PATH + "parallax1.png");
 		parallax2 = new Texture(Constants.TEXTURE_PATH + "parallax2.png");
@@ -152,6 +150,13 @@ public class GameScreen extends AbstractScreen {
 		paused = false;
 		stage.clear();
 		Gdx.input.setInputProcessor(stage);
+		if (ship != null) {
+			final List<Entity> entities = ShipFactory.buildShip(world);
+			ship = entities.get(0);
+			for (final Entity entity : entities) {
+				engine.addEntity(entity);
+			}
+		}
 	}
 
 }

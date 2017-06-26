@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -15,10 +15,10 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.SpaceGrinder;
+import com.pignic.spacegrinder.component.Controllable;
 import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.factory.basic.ShipPartFactory;
 import com.pignic.spacegrinder.factory.basic.StructureFactory;
-import com.pignic.spacegrinder.factory.basic.ThrusterFactory;
 import com.pignic.spacegrinder.pojo.Armor;
 import com.pignic.spacegrinder.pojo.Beacon;
 import com.pignic.spacegrinder.pojo.Cockpit;
@@ -90,15 +90,12 @@ public class ShipFactory {
 			final Json json = new Json();
 			final ArrayList<JsonValue> list = json.fromJson(ArrayList.class, Gdx.files.internal(this.configFile));
 			if (list != null) {
-				// AssetManager.shipPartsTextures.put(this.clazz, new HashMap<String, TextureRegion>(list.size()));
 				config = new ArrayList<ShipPart>(list.size());
 				for (final JsonValue JsonValue : list) {
 					final ShipPart shipPart = json.readValue(clazz, JsonValue);
 					shipPart.textureRegion = new TextureRegion(
 							new Texture(Constants.SHIP_PART_TEXTURE_PATH + shipPart.texture + ".png"));
 					config.add(shipPart);
-					// AssetManager.shipPartsTextures.get(this.clazz).put(shipPart.texture, new TextureRegion(
-					// new Texture(Constants.SHIP_PART_TEXTURE_PATH + shipPart.texture + ".png")));
 				}
 			}
 			this.typeName = typeName;
@@ -109,25 +106,28 @@ public class ShipFactory {
 		final Entity cockpit = ShipPartFactory.build(world, PART_TYPE.COCKPIT.config.get(0), new Vector2(), 0);
 		final Physical physical = cockpit.getComponent(Physical.class);
 		final float scl = 1f / SpaceGrinder.WORLD_SCALE * 10f;
-		final Entity shipPartA = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				PART_TYPE.THRUSTER.config.get(0), new Vector2(-6.7f * scl, 1.5f * scl), 0, new Entity(), Input.Keys.Z);
-		final Entity shipPartB = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				PART_TYPE.THRUSTER.config.get(0), new Vector2(-6.7f * scl, -1.5f * scl), 0, new Entity(), Input.Keys.Z);
-		final Entity shipPartD = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				PART_TYPE.THRUSTER.config.get(0), new Vector2(6.1f * scl, 0f * scl), (float) Math.PI, new Entity(),
-				Input.Keys.S);
-		final Entity shipPartC = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				PART_TYPE.THRUSTER.config.get(0), new Vector2(0.5f * scl, -4.5f * scl), (float) Math.PI / 2,
-				new Entity(), Input.Keys.Q, Input.Keys.A);
-		final Entity shipPartE = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				PART_TYPE.THRUSTER.config.get(0), new Vector2(0.5f * scl, 4.5f * scl), (float) (3 * Math.PI / 2),
-				new Entity(), Input.Keys.D, Input.Keys.E);
-		final Entity shipPartF = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				PART_TYPE.THRUSTER.config.get(0), new Vector2(-2.5f * scl, -4.5f * scl), (float) Math.PI / 2,
-				new Entity(), Input.Keys.A, Input.Keys.D);
-		final Entity shipPartG = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				PART_TYPE.THRUSTER.config.get(0), new Vector2(-2.5f * scl, 4.5f * scl), (float) (3 * Math.PI / 2),
-				new Entity(), Input.Keys.E, Input.Keys.Q);
+		final float thrust = ((Thruster) PART_TYPE.THRUSTER.config.get(0)).maxThrust;
+		final Entity shipPartA = ShipPartFactory.build(world, PART_TYPE.THRUSTER.config.get(0),
+				new Vector2(-6.7f * scl, 1.5f * scl), 0);
+		shipPartA.getComponent(Controllable.class).addBinding(Keys.Z, thrust);
+		final Entity shipPartB = ShipPartFactory.build(world, PART_TYPE.THRUSTER.config.get(0),
+				new Vector2(-6.7f * scl, -1.5f * scl), 0);
+		shipPartB.getComponent(Controllable.class).addBinding(Keys.Z, thrust);
+		final Entity shipPartC = ShipPartFactory.build(world, PART_TYPE.THRUSTER.config.get(0),
+				new Vector2(0.5f * scl, -4.5f * scl), (float) Math.PI / 2);
+		shipPartC.getComponent(Controllable.class).addBinding(Keys.Q, thrust).addBinding(Keys.A, thrust);
+		final Entity shipPartD = ShipPartFactory.build(world, PART_TYPE.THRUSTER.config.get(0),
+				new Vector2(6.1f * scl, 0f * scl), (float) Math.PI);
+		shipPartD.getComponent(Controllable.class).addBinding(Keys.S, thrust);
+		final Entity shipPartE = ShipPartFactory.build(world, PART_TYPE.THRUSTER.config.get(0),
+				new Vector2(0.5f * scl, 4.5f * scl), (float) (3 * Math.PI / 2));
+		shipPartE.getComponent(Controllable.class).addBinding(Keys.D, thrust).addBinding(Keys.E, thrust);
+		final Entity shipPartF = ShipPartFactory.build(world, PART_TYPE.THRUSTER.config.get(0),
+				new Vector2(-2.5f * scl, -4.5f * scl), (float) Math.PI / 2);
+		shipPartF.getComponent(Controllable.class).addBinding(Keys.A, thrust).addBinding(Keys.D, thrust);
+		final Entity shipPartG = ShipPartFactory.build(world, PART_TYPE.THRUSTER.config.get(0),
+				new Vector2(-2.5f * scl, 4.5f * scl), (float) (3 * Math.PI / 2));
+		shipPartG.getComponent(Controllable.class).addBinding(Keys.E, thrust).addBinding(Keys.Q, thrust);
 		final Entity structureA = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
 				shipPartA.getComponent(Physical.class));
 		final Entity structureB = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,

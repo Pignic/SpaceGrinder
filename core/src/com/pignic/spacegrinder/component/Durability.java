@@ -18,6 +18,14 @@ public class Durability implements Component {
 			this.type = type;
 			this.part = part;
 		}
+
+		public float getPart() {
+			return part;
+		}
+
+		public Deflection.TYPE getType() {
+			return type;
+		}
 	}
 
 	private float currentDurability;
@@ -29,9 +37,19 @@ public class Durability implements Component {
 	public Durability(final float durability, final Deflection[] deflections) {
 		this.durability = durability;
 		currentDurability = durability;
-		for (final Deflection deflection : deflections) {
-			this.deflections.put(deflection.type, deflection);
+		if (deflections != null) {
+			for (final Deflection deflection : deflections) {
+				this.deflections.put(deflection.type, deflection);
+			}
 		}
+	}
+
+	public float getCurrentDurability() {
+		return currentDurability;
+	}
+
+	public float getDurability() {
+		return durability;
 	}
 
 	public float hit(final float damage, final Damage... damages) {

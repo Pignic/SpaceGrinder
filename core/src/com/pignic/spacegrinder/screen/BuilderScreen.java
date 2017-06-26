@@ -45,6 +45,7 @@ import com.pignic.spacegrinder.factory.complex.ShipFactory.PART_TYPE;
 import com.pignic.spacegrinder.pojo.ShipPart;
 import com.pignic.spacegrinder.system.CollisionSystem;
 import com.pignic.spacegrinder.system.ControlSystem;
+import com.pignic.spacegrinder.system.DurabilitySystem;
 import com.pignic.spacegrinder.system.LightSystem;
 import com.pignic.spacegrinder.system.PhysicSystem;
 import com.pignic.spacegrinder.system.ProjectileSystem;
@@ -114,6 +115,8 @@ public class BuilderScreen extends AbstractScreen {
 		engine.addSystem(new ProjectileSystem(world, engine));
 		engine.addSystem(new TimerSystem(engine));
 		engine.addSystem(new CollisionSystem(world, engine));
+		engine.addSystem(new DurabilitySystem(world, engine));
+
 		grid = new Texture(Constants.TEXTURE_PATH + "grid.png");
 		originBody = world.createBody(new BodyDef());
 		stage = new Stage() {

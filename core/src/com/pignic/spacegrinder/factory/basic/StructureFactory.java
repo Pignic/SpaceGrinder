@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.pignic.spacegrinder.SpaceGrinder;
+import com.pignic.spacegrinder.component.Durability;
 import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.component.Position;
 import com.pignic.spacegrinder.component.Renderable;
@@ -49,6 +50,7 @@ public class StructureFactory {
 		jointDef.referenceAngle = partB.getBody().getAngle() - bodyDef.angle;
 		world.createJoint(jointDef);
 		structure.add(new Renderable(config.textureRegion, config.textureScale));
+		structure.add(new Durability(part.hitpoints, part.deflection));
 		return structure;
 	}
 }

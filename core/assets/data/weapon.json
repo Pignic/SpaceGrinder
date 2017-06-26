@@ -24,6 +24,11 @@
 		stream: false,
 		range: 30,
 		projectileSize: 0.1,
-		type: "KINETIC"
+		damageTypes: [
+			{
+				part: 1,
+				type: "KINETIC"
+			}
+		]
 	}
 ]
