@@ -8,18 +8,17 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
-import com.pignic.spacegrinder.AssetManager;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.component.Position;
 import com.pignic.spacegrinder.component.Renderable;
-import com.pignic.spacegrinder.factory.complex.ShipFactory.PART_TYPE;
+import com.pignic.spacegrinder.pojo.ShipPart;
 import com.pignic.spacegrinder.pojo.Structure;
 
 public class StructureFactory {
 
-	public static Entity build(final World world, final Physical partA, final Physical partB) {
-		final Structure config = (Structure) PART_TYPE.STRUCTURE.config.get(0);
+	public static Entity build(final World world, final ShipPart part, final Physical partA, final Physical partB) {
+		final Structure config = (Structure) part;
 		final Entity structure = new Entity();
 		final BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
@@ -49,8 +48,7 @@ public class StructureFactory {
 		jointDef.bodyB = partB.getBody();
 		jointDef.referenceAngle = partB.getBody().getAngle() - bodyDef.angle;
 		world.createJoint(jointDef);
-		structure.add(new Renderable(AssetManager.shipPartsTextures.get(PART_TYPE.STRUCTURE.clazz).get(0),
-				config.textureScale));
+		structure.add(new Renderable(config.textureRegion, config.textureScale));
 		return structure;
 	}
 }

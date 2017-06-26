@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.pignic.spacegrinder.AssetManager;
 import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Physical;
@@ -91,13 +90,15 @@ public class ShipFactory {
 			final Json json = new Json();
 			final ArrayList<JsonValue> list = json.fromJson(ArrayList.class, Gdx.files.internal(this.configFile));
 			if (list != null) {
-				AssetManager.shipPartsTextures.put(this.clazz, new ArrayList<TextureRegion>(list.size()));
+				// AssetManager.shipPartsTextures.put(this.clazz, new HashMap<String, TextureRegion>(list.size()));
 				config = new ArrayList<ShipPart>(list.size());
 				for (final JsonValue JsonValue : list) {
 					final ShipPart shipPart = json.readValue(clazz, JsonValue);
+					shipPart.textureRegion = new TextureRegion(
+							new Texture(Constants.SHIP_PART_TEXTURE_PATH + shipPart.texture + ".png"));
 					config.add(shipPart);
-					AssetManager.shipPartsTextures.get(this.clazz).add(new TextureRegion(
-							new Texture(Constants.SHIP_PART_TEXTURE_PATH + shipPart.texture + ".png")));
+					// AssetManager.shipPartsTextures.get(this.clazz).put(shipPart.texture, new TextureRegion(
+					// new Texture(Constants.SHIP_PART_TEXTURE_PATH + shipPart.texture + ".png")));
 				}
 			}
 			this.typeName = typeName;
@@ -105,31 +106,42 @@ public class ShipFactory {
 	}
 
 	public static List<Entity> buildShip(final World world) {
-		final Entity cockpit = ShipPartFactory.build(world, new Vector2(), 0, Cockpit.class);
+		final Entity cockpit = ShipPartFactory.build(world, PART_TYPE.COCKPIT.config.get(0), new Vector2(), 0);
 		final Physical physical = cockpit.getComponent(Physical.class);
 		final float scl = 1f / SpaceGrinder.WORLD_SCALE * 10f;
 		final Entity shipPartA = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(-6.7f * scl, 1.5f * scl), 0, Input.Keys.Z);
+				PART_TYPE.THRUSTER.config.get(0), new Vector2(-6.7f * scl, 1.5f * scl), 0, new Entity(), Input.Keys.Z);
 		final Entity shipPartB = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(-6.7f * scl, -1.5f * scl), 0, Input.Keys.Z);
+				PART_TYPE.THRUSTER.config.get(0), new Vector2(-6.7f * scl, -1.5f * scl), 0, new Entity(), Input.Keys.Z);
 		final Entity shipPartD = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(6.1f * scl, 0f * scl), (float) Math.PI, Input.Keys.S);
-
+				PART_TYPE.THRUSTER.config.get(0), new Vector2(6.1f * scl, 0f * scl), (float) Math.PI, new Entity(),
+				Input.Keys.S);
 		final Entity shipPartC = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(0.5f * scl, -4.5f * scl), (float) Math.PI / 2, Input.Keys.Q, Input.Keys.A);
+				PART_TYPE.THRUSTER.config.get(0), new Vector2(0.5f * scl, -4.5f * scl), (float) Math.PI / 2,
+				new Entity(), Input.Keys.Q, Input.Keys.A);
 		final Entity shipPartE = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(0.5f * scl, 4.5f * scl), (float) (3 * Math.PI / 2), Input.Keys.D, Input.Keys.E);
+				PART_TYPE.THRUSTER.config.get(0), new Vector2(0.5f * scl, 4.5f * scl), (float) (3 * Math.PI / 2),
+				new Entity(), Input.Keys.D, Input.Keys.E);
 		final Entity shipPartF = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(-2.5f * scl, -4.5f * scl), (float) Math.PI / 2, Input.Keys.A, Input.Keys.D);
+				PART_TYPE.THRUSTER.config.get(0), new Vector2(-2.5f * scl, -4.5f * scl), (float) Math.PI / 2,
+				new Entity(), Input.Keys.A, Input.Keys.D);
 		final Entity shipPartG = ((ThrusterFactory) ShipPartFactory.getFactory(Thruster.class)).build(world,
-				new Vector2(-2.5f * scl, 4.5f * scl), (float) (3 * Math.PI / 2), Input.Keys.E, Input.Keys.Q);
-		final Entity structureA = StructureFactory.build(world, physical, shipPartA.getComponent(Physical.class));
-		final Entity structureB = StructureFactory.build(world, physical, shipPartB.getComponent(Physical.class));
-		final Entity structureC = StructureFactory.build(world, physical, shipPartC.getComponent(Physical.class));
-		final Entity structureD = StructureFactory.build(world, physical, shipPartD.getComponent(Physical.class));
-		final Entity structureE = StructureFactory.build(world, physical, shipPartE.getComponent(Physical.class));
-		final Entity structureF = StructureFactory.build(world, physical, shipPartF.getComponent(Physical.class));
-		final Entity structureG = StructureFactory.build(world, physical, shipPartG.getComponent(Physical.class));
+				PART_TYPE.THRUSTER.config.get(0), new Vector2(-2.5f * scl, 4.5f * scl), (float) (3 * Math.PI / 2),
+				new Entity(), Input.Keys.E, Input.Keys.Q);
+		final Entity structureA = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
+				shipPartA.getComponent(Physical.class));
+		final Entity structureB = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
+				shipPartB.getComponent(Physical.class));
+		final Entity structureC = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
+				shipPartC.getComponent(Physical.class));
+		final Entity structureD = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
+				shipPartD.getComponent(Physical.class));
+		final Entity structureE = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
+				shipPartE.getComponent(Physical.class));
+		final Entity structureF = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
+				shipPartF.getComponent(Physical.class));
+		final Entity structureG = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
+				shipPartG.getComponent(Physical.class));
 		return Arrays.asList(new Entity[] { cockpit, shipPartA, shipPartB, shipPartC, shipPartD, shipPartE, shipPartF,
 				shipPartG, structureA, structureB, structureC, structureD, structureE, structureF, structureG });
 	}

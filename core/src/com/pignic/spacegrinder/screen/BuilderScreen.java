@@ -30,6 +30,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Tree;
+import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.RenderHelper;
@@ -40,6 +42,7 @@ import com.pignic.spacegrinder.factory.basic.ShipPartFactory;
 import com.pignic.spacegrinder.factory.basic.StructureFactory;
 import com.pignic.spacegrinder.factory.complex.ShipFactory;
 import com.pignic.spacegrinder.factory.complex.ShipFactory.PART_TYPE;
+import com.pignic.spacegrinder.pojo.ShipPart;
 import com.pignic.spacegrinder.system.CollisionSystem;
 import com.pignic.spacegrinder.system.ControlSystem;
 import com.pignic.spacegrinder.system.LightSystem;
@@ -58,7 +61,7 @@ public class BuilderScreen extends AbstractScreen {
 	private ControlSystem controlSystem;
 	private Actor currentButton;
 	private Entity currentPiece;
-	private ShipFactory.PART_TYPE currentType;
+	private ShipPart currentType;
 	private final Box2DDebugRenderer debugRenderer;
 	private final PooledEngine engine;
 	private final List<Entity> entities = new ArrayList<Entity>();
@@ -109,7 +112,7 @@ public class BuilderScreen extends AbstractScreen {
 		engine.addSystem(new RenderSystem(batch));
 		engine.addSystem(new LightSystem(batch, lightsRayHandler));
 		engine.addSystem(new ProjectileSystem(world, engine));
-		engine.addSystem(new TimerSystem());
+		engine.addSystem(new TimerSystem(engine));
 		engine.addSystem(new CollisionSystem(world, engine));
 		grid = new Texture(Constants.TEXTURE_PATH + "grid.png");
 		originBody = world.createBody(new BodyDef());
@@ -210,54 +213,58 @@ public class BuilderScreen extends AbstractScreen {
 		});
 		table.add(runButton).width(100).left();
 		table.row();
-
+		final Tree tree = new Tree(style.skin);
 		for (final ShipFactory.PART_TYPE type : ShipFactory.PART_TYPE.values()) {
-			final Button partButton = new Button(style.skin);
-			partButton.add(new Label(type.name(), style.skin));
-			partButton.setUserObject(type);
-			partButton.addListener(new ChangeListener() {
-				@Override
-				public void changed(final ChangeEvent event, final Actor actor) {
-					clearTempEntity();
-					currentType = (PART_TYPE) actor.getUserObject();
-					currentButton = actor;
-					final Entity entity = buildPart(currentType, new Vector2());
-					Physical physical;
-					if (entity != null && (physical = entity.getComponent(Physical.class)) != null) {
-						final MouseJointDef def = new MouseJointDef();
-						physical.getBody().setFixedRotation(true);
-						physical.getBody().setUserData(entity);
-						def.bodyA = originBody;
-						def.bodyB = physical.getBody();
-						def.collideConnected = true;
-						def.bodyB.setTransform(new Vector2(mouse.x, mouse.y), rotation);
-						def.target.set(mouse.x, mouse.y);
-						def.maxForce = 10000.0f * physical.getBody().getMass();
-						mouseJoint = (MouseJoint) world.createJoint(def);
-						physical.getBody().setAwake(true);
+			final Label label = new Label(type.name(), style.skin, "light");
+			final Node node = new Node(label);
+			tree.add(node);
+			for (final ShipPart part : type.config) {
+				final Button partButton = new Button(style.skin);
+				partButton.add(new Label(part.name, style.skin));
+				partButton.setUserObject(part);
+				partButton.addListener(new ChangeListener() {
+					@Override
+					public void changed(final ChangeEvent event, final Actor actor) {
+						clearTempEntity();
+						currentType = (ShipPart) actor.getUserObject();
+						currentButton = actor;
+						final Entity entity = buildPart(currentType, new Vector2());
+						Physical physical;
+						if (entity != null && (physical = entity.getComponent(Physical.class)) != null) {
+							final MouseJointDef def = new MouseJointDef();
+							physical.getBody().setFixedRotation(true);
+							physical.getBody().setUserData(entity);
+							def.bodyA = originBody;
+							def.bodyB = physical.getBody();
+							def.collideConnected = true;
+							def.bodyB.setTransform(new Vector2(mouse.x, mouse.y), rotation);
+							def.target.set(mouse.x, mouse.y);
+							def.maxForce = 10000.0f * physical.getBody().getMass();
+							mouseJoint = (MouseJoint) world.createJoint(def);
+							physical.getBody().setAwake(true);
+						}
 					}
-				}
-			});
-			table.add(partButton).width(100).left();
-			table.row();
+				});
+				node.add(new Node(partButton));
+			}
 		}
+		table.add(tree);
 		table.bottom().left();
 		return table;
 	}
 
-	private Entity buildPart(final PART_TYPE type, final Vector2 position) {
+	private Entity buildPart(final ShipPart type, final Vector2 position) {
 		Entity createdEntity = null;
 		if (ShipFactory.PART_TYPE.STRUCTURE.equals(currentType)) {
 			if (pickedBody != null && lastPickedBody != null && pickedBody != lastPickedBody) {
-				createdEntity = StructureFactory.build(world,
+				createdEntity = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0),
 						((Entity) pickedBody.getUserData()).getComponent(Physical.class),
 						((Entity) lastPickedBody.getUserData()).getComponent(Physical.class));
 				lastPickedBody = null;
 				pickedBody = null;
 			}
 		} else {
-			createdEntity = ShipPartFactory.build(world, new Vector2(position.x, position.y), rotation,
-					currentType.clazz);
+			createdEntity = ShipPartFactory.build(world, currentType, new Vector2(position.x, position.y), rotation);
 		}
 		return createdEntity;
 	}

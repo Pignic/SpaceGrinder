@@ -18,9 +18,8 @@ public abstract class ShipPartFactory {
 
 	private static Map<Class<? extends ShipPart>, ShipPartFactory> factories = new HashMap<Class<? extends ShipPart>, ShipPartFactory>();
 
-	public static Entity build(final World world, final Vector2 position, final float angle,
-			final Class<? extends ShipPart> partClass) {
-		return getFactory(partClass).buildPart(world, position, angle);
+	public static Entity build(final World world, final ShipPart part, final Vector2 position, final float angle) {
+		return getFactory(part.getClass()).buildPart(world, part, position, angle);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -54,6 +53,13 @@ public abstract class ShipPartFactory {
 		return new Physical(world, entity, bodyDef, fixtureDef);
 	}
 
-	public abstract Entity buildPart(final World world, final Vector2 position, final float angle);
+	public Entity buildPart(final World world, final ShipPart part, final Vector2 position, final float angle) {
+		final Entity entity = new Entity();
+		entity.add(new com.pignic.spacegrinder.component.ShipPart(1));
+		return buildPart(world, part, position, angle, entity);
+	}
+
+	protected abstract Entity buildPart(final World world, final ShipPart part, final Vector2 position,
+			final float angle, Entity entity);
 
 }

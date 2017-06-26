@@ -21,9 +21,15 @@ import com.pignic.spacegrinder.RenderHelper;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.factory.complex.ShipFactory;
+import com.pignic.spacegrinder.system.CollisionSystem;
 import com.pignic.spacegrinder.system.ControlSystem;
+import com.pignic.spacegrinder.system.LightSystem;
 import com.pignic.spacegrinder.system.PhysicSystem;
+import com.pignic.spacegrinder.system.ProjectileSystem;
 import com.pignic.spacegrinder.system.RenderSystem;
+import com.pignic.spacegrinder.system.TimerSystem;
+
+import box2dLight.RayHandler;
 
 public class GameScreen extends AbstractScreen {
 
@@ -33,6 +39,7 @@ public class GameScreen extends AbstractScreen {
 	private final Box2DDebugRenderer debugRenderer;
 	private final PooledEngine engine;
 	private final SpaceGrinder game;
+	private RayHandler lightsRayHandler;
 	private final Texture parallax1;
 	private final Texture parallax2;
 	private boolean paused = true;
@@ -49,10 +56,15 @@ public class GameScreen extends AbstractScreen {
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / SpaceGrinder.WORLD_SCALE,
 				Gdx.graphics.getHeight() / SpaceGrinder.WORLD_SCALE);
 		batch = new SpriteBatch();
+		lightsRayHandler = new RayHandler(world);
 		final ControlSystem controlSystem = new ControlSystem();
 		engine.addSystem(controlSystem);
 		engine.addSystem(new PhysicSystem(world));
 		engine.addSystem(new RenderSystem(batch));
+		engine.addSystem(new LightSystem(batch, lightsRayHandler));
+		engine.addSystem(new ProjectileSystem(world, engine));
+		engine.addSystem(new TimerSystem(engine));
+		engine.addSystem(new CollisionSystem(world, engine));
 		final List<Entity> entities = ShipFactory.buildShip(world);
 		ship = entities.get(0);
 		for (final Entity entity : entities) {

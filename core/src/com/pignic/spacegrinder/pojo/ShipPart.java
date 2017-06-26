@@ -3,6 +3,7 @@ package com.pignic.spacegrinder.pojo;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class ShipPart implements JSONObject {
@@ -16,6 +17,7 @@ public abstract class ShipPart implements JSONObject {
 	public String name;
 	public SimpleVector[] shape;
 	public String texture;
+	public TextureRegion textureRegion;
 	public float textureScale;
 
 	public Vector2[] getShape() {

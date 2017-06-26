@@ -1,6 +1,7 @@
 package com.pignic.spacegrinder.system;
 
 import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
@@ -12,14 +13,19 @@ public class TimerSystem extends IteratingSystem {
 		public static final ComponentMapper<Timer> timer = ComponentMapper.getFor(Timer.class);
 	}
 
-	public TimerSystem() {
+	private final Engine engine;
+
+	public TimerSystem(final Engine engine) {
 		super(Family.all(Timer.class).get());
+		this.engine = engine;
 	}
 
 	@Override
 	protected void processEntity(final Entity entity, final float deltaTime) {
 		final Timer timer = Mapper.timer.get(entity);
-		timer.update(deltaTime);
+		if (timer.update(deltaTime) && timer.isDestroyOnTimeout()) {
+			engine.removeEntity(entity);
+		}
 	}
 
 }

@@ -41,13 +41,21 @@ public class RenderSystem extends SortedIteratingSystem {
 		final Particle particle = Mapper.particle.get(entity);
 		if (particle != null) {
 			final ParticleEmitter emitter = particle.getEmitter();
-			emitter.setPosition(position.get().x / SpaceGrinder.WORLD_SCALE,
-					position.get().y / SpaceGrinder.WORLD_SCALE);
-			final ScaledNumericValue angle = emitter.getAngle();
-			angle.setLow((float) Math.toDegrees(position.getAngle() + particle.getRotation()));
-			angle.setHigh((float) Math.toDegrees(position.getAngle() + particle.getRotation()));
-			emitter.getScale().setHigh(particle.getScale());
-			emitter.getScale().setLow(particle.getScale());
+			if (particle.isActive()) {
+				emitter.setPosition(position.get().x / SpaceGrinder.WORLD_SCALE,
+						position.get().y / SpaceGrinder.WORLD_SCALE);
+				if (particle.isRotating()) {
+					final ScaledNumericValue angle = emitter.getAngle();
+					angle.setLowMin((float) Math.toDegrees(position.getAngle() + particle.getRotation())
+							+ particle.getAngleLowMin());
+					angle.setLowMax((float) Math.toDegrees(position.getAngle() + particle.getRotation())
+							+ particle.getAngleLowMax());
+					angle.setHigh((float) Math.toDegrees(position.getAngle() + particle.getRotation())
+							+ particle.getAngleHigh());
+				}
+				emitter.getScale().setHigh(particle.getScale());
+				emitter.getScale().setLow(particle.getScale());
+			}
 			emitter.draw(batch, deltaTime);
 		}
 		if (renderable != null) {
