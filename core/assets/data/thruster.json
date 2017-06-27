@@ -15,10 +15,10 @@
 			}
 		],
 		cost: 1000,
+		hitpoints: 100,
 		// Specific for thrusters
 		maxThrust: 1000,
 		particle: "",
-		hitpoints: 100,
 		deflection: [
 			{
 				type: "LIGHT",
@@ -41,10 +41,10 @@
 			}
 		],
 		cost: 6000,
+		hitpoints: 600,
 		// Specific for thrusters
 		maxThrust: 10000,
 		particle: "",
-		hitpoints: 600,
 		deflection: [
 			{
 				type: "LIGHT",

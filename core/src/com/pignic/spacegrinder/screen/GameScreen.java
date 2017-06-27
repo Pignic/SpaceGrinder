@@ -67,7 +67,11 @@ public class GameScreen extends AbstractScreen {
 		engine.addSystem(new TimerSystem(engine));
 		engine.addSystem(new CollisionSystem(world, engine));
 		engine.addSystem(new DurabilitySystem(world, engine));
-
+		final List<Entity> entities = ShipFactory.buildShip(world);
+		ship = entities.get(0);
+		for (final Entity entity : entities) {
+			engine.addEntity(entity);
+		}
 		background = new Texture(Constants.TEXTURE_PATH + "bg.png");
 		parallax1 = new Texture(Constants.TEXTURE_PATH + "parallax1.png");
 		parallax2 = new Texture(Constants.TEXTURE_PATH + "parallax2.png");
@@ -150,12 +154,8 @@ public class GameScreen extends AbstractScreen {
 		paused = false;
 		stage.clear();
 		Gdx.input.setInputProcessor(stage);
-		if (ship != null) {
-			final List<Entity> entities = ShipFactory.buildShip(world);
-			ship = entities.get(0);
-			for (final Entity entity : entities) {
-				engine.addEntity(entity);
-			}
+		if (ship == null) {
+
 		}
 	}
 

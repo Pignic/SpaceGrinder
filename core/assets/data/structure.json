@@ -11,6 +11,7 @@
 			}
 		],
 		cost: 1000,
+		hitpoints: 100,
 		// Specific for structures
 		thickness: 10
 	}

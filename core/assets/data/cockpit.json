@@ -14,7 +14,8 @@
 				quantity: 100
 			}
 		],
-		cost: 1000
+		cost: 1000,
+		hitpoints: 100
 		// Specific for cockpit
 	}
 ]

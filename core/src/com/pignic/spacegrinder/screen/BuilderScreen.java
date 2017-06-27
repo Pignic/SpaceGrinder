@@ -202,6 +202,7 @@ public class BuilderScreen extends AbstractScreen {
 				return true;
 			}
 		};
+		setSimulation(false);
 	}
 
 	public Table buildMenu(final BuilderScreen screen) {
@@ -360,6 +361,7 @@ public class BuilderScreen extends AbstractScreen {
 			}
 		}
 		runningSimulation = active;
+		controlSystem.setProcessing(active);
 		return active;
 	}
 
