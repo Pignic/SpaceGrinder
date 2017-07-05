@@ -39,6 +39,7 @@ import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.RenderHelper;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Configurable;
+import com.pignic.spacegrinder.component.Link;
 import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.factory.basic.ShipPartFactory;
 import com.pignic.spacegrinder.factory.basic.StructureFactory;
@@ -82,6 +83,10 @@ public class BuilderScreen extends AbstractScreen {
 		public boolean reportFixture(final Fixture fixture) {
 			if (fixture.testPoint(mouse.x, mouse.y)) {
 				pickedBody = fixture.getBody();
+				// Click through structures
+				if (((Entity) pickedBody.getUserData()).getComponent(Link.class) != null) {
+					return true;
+				}
 				return false;
 			} else {
 				return true;
@@ -317,6 +322,10 @@ public class BuilderScreen extends AbstractScreen {
 	}
 
 	private void clearTempEntity() {
+		if (propertiesTable != null) {
+			propertiesTable.setVisible(false);
+			propertiesTable.clear();
+		}
 		currentType = null;
 		currentButton = null;
 		lastPickedBody = null;
@@ -393,6 +402,7 @@ public class BuilderScreen extends AbstractScreen {
 		for (final Entity entity : entities) {
 			entity.getComponent(Physical.class).getBody().setType(active ? BodyType.DynamicBody : BodyType.StaticBody);
 		}
+		clearTempEntity();
 		runningSimulation = active;
 		controlSystem.setProcessing(active);
 		return active;

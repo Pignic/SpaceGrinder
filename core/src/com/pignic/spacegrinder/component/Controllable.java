@@ -108,6 +108,19 @@ public class Controllable extends Configurable implements SerializableComponent 
 				input.setText(Input.Keys.toString(keycode));
 				return true;
 			}
+
+			@Override
+			public boolean keyTyped(final InputEvent event, final char character) {
+				input.setText(Input.Keys.toString(event.getKeyCode()));
+				return true;
+			}
+
+			@Override
+			public boolean keyUp(final InputEvent event, final int keycode) {
+				binding.keycode = keycode;
+				input.setText(Input.Keys.toString(keycode));
+				return true;
+			}
 		});
 		final Slider scaleSlider = new Slider(0f, maxAmout, maxAmout / 100f, false, AbstractScreen.style.skin);
 		scaleSlider.setValue(binding.amount);

@@ -42,7 +42,7 @@ public class ControlSystem extends IteratingSystem {
 					e.printStackTrace();
 				}
 			}
-			if (Gdx.input.isKeyPressed(binding.getKeycode())) {
+			if (c.getAction() != null && Gdx.input.isKeyPressed(binding.getKeycode())) {
 				c.getAction().binding = binding;
 				try {
 					c.getAction().call();
