@@ -43,13 +43,13 @@ import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.factory.basic.ShipPartFactory;
 import com.pignic.spacegrinder.factory.basic.StructureFactory;
 import com.pignic.spacegrinder.factory.complex.ShipFactory;
-import com.pignic.spacegrinder.factory.complex.ShipFactory.PART_TYPE;
 import com.pignic.spacegrinder.pojo.ShipPart;
 import com.pignic.spacegrinder.service.SaveService;
 import com.pignic.spacegrinder.system.CollisionSystem;
 import com.pignic.spacegrinder.system.ControlSystem;
 import com.pignic.spacegrinder.system.DurabilitySystem;
 import com.pignic.spacegrinder.system.LightSystem;
+import com.pignic.spacegrinder.system.LinkSystem;
 import com.pignic.spacegrinder.system.PhysicSystem;
 import com.pignic.spacegrinder.system.ProjectileSystem;
 import com.pignic.spacegrinder.system.RenderSystem;
@@ -116,6 +116,7 @@ public class BuilderScreen extends AbstractScreen {
 		lightsRayHandler = new RayHandler(world);
 		controlSystem = new ControlSystem();
 		engine.addSystem(controlSystem);
+		engine.addSystem(new LinkSystem(world));
 		engine.addSystem(new PhysicSystem(world));
 		engine.addSystem(new RenderSystem(batch));
 		engine.addSystem(new LightSystem(batch, lightsRayHandler));
@@ -188,11 +189,9 @@ public class BuilderScreen extends AbstractScreen {
 							final Entity createdEntity = buildPart(currentType,
 									mouseJoint == null ? null : mouseJoint.getBodyB().getWorldCenter());
 							if (createdEntity != null) {
-								if (createdEntity != null) {
-									final Physical physical = createdEntity.getComponent(Physical.class);
-									if (physical != null) {
-										physical.getBody().setType(BodyType.StaticBody);
-									}
+								final Physical physical = createdEntity.getComponent(Physical.class);
+								if (physical != null) {
+									physical.getBody().setType(BodyType.StaticBody);
 								}
 								engine.addEntity(createdEntity);
 							}
@@ -297,9 +296,8 @@ public class BuilderScreen extends AbstractScreen {
 		Entity createdEntity = null;
 		if (ShipFactory.PART_TYPE.STRUCTURE.equals(currentType.getPartType())) {
 			if (pickedBody != null && lastPickedBody != null && pickedBody != lastPickedBody) {
-				createdEntity = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0),
-						((Entity) pickedBody.getUserData()).getComponent(Physical.class),
-						((Entity) lastPickedBody.getUserData()).getComponent(Physical.class));
+				createdEntity = StructureFactory.build(world, currentType, (Entity) pickedBody.getUserData(),
+						(Entity) lastPickedBody.getUserData());
 				lastPickedBody = null;
 				pickedBody = null;
 			}
@@ -368,7 +366,7 @@ public class BuilderScreen extends AbstractScreen {
 		RenderHelper.drawTiledParalax(grid, batch, 1, 1, camera);
 		engine.update(delta);
 		batch.end();
-		// debugRenderer.render(world, camera.combined);
+		debugRenderer.render(world, camera.combined);
 		stage.act(delta);
 		stage.draw();
 	}

@@ -25,6 +25,7 @@ import com.pignic.spacegrinder.system.CollisionSystem;
 import com.pignic.spacegrinder.system.ControlSystem;
 import com.pignic.spacegrinder.system.DurabilitySystem;
 import com.pignic.spacegrinder.system.LightSystem;
+import com.pignic.spacegrinder.system.LinkSystem;
 import com.pignic.spacegrinder.system.PhysicSystem;
 import com.pignic.spacegrinder.system.ProjectileSystem;
 import com.pignic.spacegrinder.system.RenderSystem;
@@ -62,6 +63,7 @@ public class GameScreen extends AbstractScreen {
 		engine.addSystem(controlSystem);
 		engine.addSystem(new PhysicSystem(world));
 		engine.addSystem(new RenderSystem(batch));
+		engine.addSystem(new LinkSystem(world));
 		engine.addSystem(new LightSystem(batch, lightsRayHandler));
 		engine.addSystem(new ProjectileSystem());
 		engine.addSystem(new TimerSystem(engine));

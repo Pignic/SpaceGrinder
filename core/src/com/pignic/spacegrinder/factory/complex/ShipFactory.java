@@ -15,7 +15,6 @@ import com.pignic.spacegrinder.AssetManager;
 import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Controllable;
-import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.factory.basic.ShipPartFactory;
 import com.pignic.spacegrinder.factory.basic.StructureFactory;
 import com.pignic.spacegrinder.pojo.Armor;
@@ -103,7 +102,6 @@ public class ShipFactory {
 
 	public static List<Entity> buildShip(final World world) {
 		final Entity cockpit = ShipPartFactory.build(world, PART_TYPE.COCKPIT.config.get(0), new Vector2(), 0);
-		final Physical physical = cockpit.getComponent(Physical.class);
 		final float scl = 1f / SpaceGrinder.WORLD_SCALE * 10f;
 		final float thrust = ((Thruster) PART_TYPE.THRUSTER.config.get(0)).maxThrust;
 		final Entity shipPartA = ShipPartFactory.build(world, PART_TYPE.THRUSTER.config.get(0),
@@ -127,20 +125,13 @@ public class ShipFactory {
 		final Entity shipPartG = ShipPartFactory.build(world, PART_TYPE.THRUSTER.config.get(0),
 				new Vector2(-2.5f * scl, 4.5f * scl), (float) (3 * Math.PI / 2));
 		shipPartG.getComponent(Controllable.class).addBinding(Keys.E, thrust).addBinding(Keys.Q, thrust);
-		final Entity structureA = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
-				shipPartA.getComponent(Physical.class));
-		final Entity structureB = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
-				shipPartB.getComponent(Physical.class));
-		final Entity structureC = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
-				shipPartC.getComponent(Physical.class));
-		final Entity structureD = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
-				shipPartD.getComponent(Physical.class));
-		final Entity structureE = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
-				shipPartE.getComponent(Physical.class));
-		final Entity structureF = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
-				shipPartF.getComponent(Physical.class));
-		final Entity structureG = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), physical,
-				shipPartG.getComponent(Physical.class));
+		final Entity structureA = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), cockpit, shipPartA);
+		final Entity structureB = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), cockpit, shipPartB);
+		final Entity structureC = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), cockpit, shipPartC);
+		final Entity structureD = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), cockpit, shipPartD);
+		final Entity structureE = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), cockpit, shipPartE);
+		final Entity structureF = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), cockpit, shipPartF);
+		final Entity structureG = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0), cockpit, shipPartG);
 		return Arrays.asList(new Entity[] { cockpit, shipPartA, shipPartB, shipPartC, shipPartD, shipPartE, shipPartF,
 				shipPartG, structureA, structureB, structureC, structureD, structureE, structureF, structureG });
 	}

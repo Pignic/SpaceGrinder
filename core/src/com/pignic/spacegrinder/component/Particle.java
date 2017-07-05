@@ -56,6 +56,7 @@ public class Particle implements SerializableComponent {
 	public void deserialize(final Json json, final JsonValue jsonData) {
 		setEffect(EFFECT.valueOf(jsonData.getString("effect")));
 		active = jsonData.getBoolean("active");
+		setActive(active);
 		loop = jsonData.getBoolean("loop");
 		offset.set(jsonData.getFloat("offsetx"), jsonData.getFloat("offsety"));
 		rotating = jsonData.getBoolean("rotating");
