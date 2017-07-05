@@ -1,6 +1,5 @@
 package com.pignic.spacegrinder.component;
 
-import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -9,13 +8,15 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import com.pignic.spacegrinder.screen.AbstractScreen;
 
 import box2dLight.ConeLight;
 import box2dLight.PositionalLight;
 import box2dLight.RayHandler;
 
-public class LightSource extends Configurable implements Component {
+public class LightSource extends Configurable implements SerializableComponent {
 
 	private float angle;
 
@@ -25,17 +26,21 @@ public class LightSource extends Configurable implements Component {
 
 	private boolean built = false;
 
-	private final Color color;
+	private final Color color = new Color();
 
 	private ConeLight light;
 
-	private final float maxArc;
+	private float maxArc;
 
-	private final float maxRange;
+	private float maxRange;
 
-	private Vector2 position;
+	private final Vector2 position = new Vector2();
 
-	private final float range;
+	private float range;
+
+	public LightSource() {
+
+	}
 
 	public LightSource(final Color color, final Body body, final float range, final float arc, final float maxRange,
 			final float maxArc) {
@@ -45,7 +50,7 @@ public class LightSource extends Configurable implements Component {
 	}
 
 	private LightSource(final Color color, final float range, final float maxRange, final float maxArc) {
-		this.color = color;
+		this.color.set(color);
 		this.range = range;
 		this.maxArc = maxArc;
 		this.maxRange = maxRange;
@@ -55,7 +60,7 @@ public class LightSource extends Configurable implements Component {
 			final float maxRange, final float maxArc) {
 		this(color, range, maxRange, maxArc);
 		this.angle = angle;
-		this.position = position;
+		this.position.set(position);
 		this.arc = arc;
 	}
 
@@ -74,6 +79,20 @@ public class LightSource extends Configurable implements Component {
 		}
 		built = true;
 		return light;
+	}
+
+	@Override
+	public void deserialize(final Json json, final JsonValue jsonData) {
+		angle = jsonData.getFloat("angle");
+		arc = jsonData.getFloat("arc");
+		maxArc = jsonData.getFloat("maxArc");
+		maxRange = jsonData.getFloat("maxRange");
+		range = jsonData.getFloat("range");
+		position.x = jsonData.getFloat("x");
+		position.y = jsonData.getFloat("y");
+		color.r = jsonData.getFloat("r");
+		color.g = jsonData.getFloat("g");
+		color.b = jsonData.getFloat("b");
 	}
 
 	@Override
@@ -157,6 +176,20 @@ public class LightSource extends Configurable implements Component {
 
 	public boolean isBuilt() {
 		return built;
+	}
+
+	@Override
+	public void serialize(final Json json) {
+		json.writeValue("angle", angle);
+		json.writeValue("arc", arc);
+		json.writeValue("r", color.r);
+		json.writeValue("g", color.g);
+		json.writeValue("b", color.b);
+		json.writeValue("maxArc", maxArc);
+		json.writeValue("maxRange", maxRange);
+		json.writeValue("x", position.x);
+		json.writeValue("y", position.y);
+		json.writeValue("range", range);
 	}
 
 }

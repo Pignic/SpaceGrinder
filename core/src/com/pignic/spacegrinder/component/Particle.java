@@ -3,15 +3,16 @@ package com.pignic.spacegrinder.component;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.SpaceGrinder;
 
-public class Particle implements Component {
+public class Particle implements SerializableComponent {
 
 	public static enum EFFECT {
 		IMPACT, SHIELD, THRUSTER
@@ -21,15 +22,17 @@ public class Particle implements Component {
 
 	private boolean active = false;
 
-	private final float angleHigh;
+	private float angleHigh;
 
-	private final float angleLowMax;
+	private float angleLowMax;
 
-	private final float angleLowMin;
+	private float angleLowMin;
 
 	private final ParticleEffect effect = new ParticleEffect();
 
-	private final ParticleEmitter emitter;
+	private EFFECT effectType;
+
+	private ParticleEmitter emitter;
 
 	private boolean loop = true;
 
@@ -41,27 +44,23 @@ public class Particle implements Component {
 
 	private float scale = 1;
 
+	public Particle() {
+
+	}
+
 	public Particle(final EFFECT effect) {
-		if (effects.size() <= 0) {
-			effects.put(EFFECT.THRUSTER, new ParticleEffect());
-			effects.get(EFFECT.THRUSTER).load(Gdx.files.internal(Constants.PARTICLE_PATH + "thruster-particle.p"),
-					Gdx.files.internal(""));
-			effects.get(EFFECT.THRUSTER).scaleEffect(1 / SpaceGrinder.WORLD_SCALE);
+		setEffect(effect);
+	}
 
-			effects.put(EFFECT.IMPACT, new ParticleEffect());
-			effects.get(EFFECT.IMPACT).load(Gdx.files.internal(Constants.PARTICLE_PATH + "impact-particle.p"),
-					Gdx.files.internal(""));
-			effects.get(EFFECT.IMPACT).scaleEffect(1 / SpaceGrinder.WORLD_SCALE);
-
-			effects.put(EFFECT.SHIELD, new ParticleEffect());
-			effects.get(EFFECT.SHIELD).load(Gdx.files.internal(Constants.PARTICLE_PATH + "shield-particle.p"),
-					Gdx.files.internal(""));
-			effects.get(EFFECT.SHIELD).scaleEffect(1 / SpaceGrinder.WORLD_SCALE);
-		}
-		emitter = new ParticleEmitter(effects.get(effect).getEmitters().first());
-		angleLowMin = emitter.getAngle().getLowMin();
-		angleLowMax = emitter.getAngle().getLowMax();
-		angleHigh = emitter.getAngle().getHighMin();
+	@Override
+	public void deserialize(final Json json, final JsonValue jsonData) {
+		setEffect(EFFECT.valueOf(jsonData.getString("effect")));
+		active = jsonData.getBoolean("active");
+		loop = jsonData.getBoolean("loop");
+		offset.set(jsonData.getFloat("offsetx"), jsonData.getFloat("offsety"));
+		rotating = jsonData.getBoolean("rotating");
+		rotation = jsonData.getFloat("rotation");
+		scale = jsonData.getFloat("scale");
 	}
 
 	public float getAngleHigh() {
@@ -108,6 +107,18 @@ public class Particle implements Component {
 		return rotating;
 	}
 
+	@Override
+	public void serialize(final Json json) {
+		json.writeValue("active", active);
+		json.writeValue("loop", loop);
+		json.writeValue("offsetx", offset.x);
+		json.writeValue("offsety", offset.y);
+		json.writeValue("rotating", rotating);
+		json.writeValue("rotation", rotation);
+		json.writeValue("scale", scale);
+		json.writeValue("effect", effectType);
+	}
+
 	public Particle setActive(final boolean active) {
 		this.active = active;
 		if (this.active) {
@@ -118,6 +129,30 @@ public class Particle implements Component {
 			emitter.setContinuous(false);
 		}
 		return this;
+	}
+
+	private void setEffect(final EFFECT effect) {
+		effectType = effect;
+		if (effects.size() <= 0) {
+			effects.put(EFFECT.THRUSTER, new ParticleEffect());
+			effects.get(EFFECT.THRUSTER).load(Gdx.files.internal(Constants.PARTICLE_PATH + "thruster-particle.p"),
+					Gdx.files.internal(""));
+			effects.get(EFFECT.THRUSTER).scaleEffect(1 / SpaceGrinder.WORLD_SCALE);
+
+			effects.put(EFFECT.IMPACT, new ParticleEffect());
+			effects.get(EFFECT.IMPACT).load(Gdx.files.internal(Constants.PARTICLE_PATH + "impact-particle.p"),
+					Gdx.files.internal(""));
+			effects.get(EFFECT.IMPACT).scaleEffect(1 / SpaceGrinder.WORLD_SCALE);
+
+			effects.put(EFFECT.SHIELD, new ParticleEffect());
+			effects.get(EFFECT.SHIELD).load(Gdx.files.internal(Constants.PARTICLE_PATH + "shield-particle.p"),
+					Gdx.files.internal(""));
+			effects.get(EFFECT.SHIELD).scaleEffect(1 / SpaceGrinder.WORLD_SCALE);
+		}
+		emitter = new ParticleEmitter(effects.get(effect).getEmitters().first());
+		angleLowMin = emitter.getAngle().getLowMin();
+		angleLowMax = emitter.getAngle().getLowMax();
+		angleHigh = emitter.getAngle().getHighMin();
 	}
 
 	public Particle setLoop(final boolean loop) {

@@ -63,10 +63,10 @@ public class GameScreen extends AbstractScreen {
 		engine.addSystem(new PhysicSystem(world));
 		engine.addSystem(new RenderSystem(batch));
 		engine.addSystem(new LightSystem(batch, lightsRayHandler));
-		engine.addSystem(new ProjectileSystem(world, engine));
+		engine.addSystem(new ProjectileSystem());
 		engine.addSystem(new TimerSystem(engine));
-		engine.addSystem(new CollisionSystem(world, engine));
-		engine.addSystem(new DurabilitySystem(world, engine));
+		engine.addSystem(new CollisionSystem(world));
+		engine.addSystem(new DurabilitySystem());
 		final List<Entity> entities = ShipFactory.buildShip(world);
 		ship = entities.get(0);
 		for (final Entity entity : entities) {
@@ -129,7 +129,7 @@ public class GameScreen extends AbstractScreen {
 		RenderHelper.drawTiledParalax(parallax2, batch, 1, 1, camera);
 		engine.update(delta);
 		batch.end();
-		debugRenderer.render(world, camera.combined);
+		// debugRenderer.render(world, camera.combined);
 		stage.act(delta);
 		stage.draw();
 	}

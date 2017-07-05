@@ -23,16 +23,20 @@ public class PhysicSystem extends IteratingSystem {
 		this.world = world;
 	}
 
+	public World getWorld() {
+		return world;
+	}
+
 	@Override
 	protected void processEntity(final Entity entity, final float deltaTime) {
-		Mapper.position.get(entity).setScaled(Mapper.physical.get(entity).getBody().getPosition(),
-				SpaceGrinder.WORLD_SCALE);
-		Mapper.position.get(entity).setAngle(Mapper.physical.get(entity).getBody().getAngle());
+		final Physical physical = Mapper.physical.get(entity);
+		Mapper.position.get(entity).setScaled(physical.getBody().getPosition(), SpaceGrinder.WORLD_SCALE);
+		Mapper.position.get(entity).setAngle(physical.getBody().getAngle());
 	}
 
 	@Override
 	public void update(final float deltaTime) {
 		super.update(deltaTime);
-		world.step(1 / 60f, 16, 12);
+		world.step(1 / 60f, 8, 6);
 	}
 }

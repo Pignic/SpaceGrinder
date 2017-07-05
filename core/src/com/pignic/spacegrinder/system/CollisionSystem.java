@@ -1,7 +1,6 @@
 package com.pignic.spacegrinder.system;
 
 import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
@@ -30,14 +29,11 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 		public static final ComponentMapper<Projectile> projectile = ComponentMapper.getFor(Projectile.class);
 	}
 
-	private final Engine engine;
-
 	private final World world;
 
-	public CollisionSystem(final World world, final Engine engine) {
+	public CollisionSystem(final World world) {
 		super(Family.all(Collision.class).get());
 		this.world = world;
-		this.engine = engine;
 		this.world.setContactListener(this);
 	}
 
@@ -59,8 +55,8 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 			particleEntity.add(
 					new Position(new Vector2(contact.getWorldManifold().getPoints()[0]).scl(SpaceGrinder.WORLD_SCALE),
 							new Vector2(), contact.getWorldManifold().getNormal().angle()));
-			engine.addEntity(entity);
-			engine.addEntity(particleEntity);
+			getEngine().addEntity(entity);
+			getEngine().addEntity(particleEntity);
 		}
 	}
 
@@ -78,8 +74,8 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 		final Durability durability = Mapper.durability.get(partEntity);
 		durability.hit(projectile.getDamage(), projectile.getDamageTypes().values()
 				.toArray(new com.pignic.spacegrinder.component.Durability.Damage[0]));
-		world.destroyBody(projectileEntity.getComponent(Physical.class).getBody());
-		engine.removeEntity(projectileEntity);
+		projectileEntity.getComponent(Physical.class).destroyBody();
+		getEngine().removeEntity(projectileEntity);
 	}
 
 	private void handleProjectileToProjectile(final Entity projectileA, final Entity ProjectileB) {
@@ -110,7 +106,7 @@ public class CollisionSystem extends IteratingSystem implements ContactListener 
 		} else {
 			handlePartToPart(collision.getEntityA(), collision.getEntityB());
 		}
-		engine.removeEntity(entity);
+		getEngine().removeEntity(entity);
 	}
 
 }

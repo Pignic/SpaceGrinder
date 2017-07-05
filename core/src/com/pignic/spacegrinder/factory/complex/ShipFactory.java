@@ -7,12 +7,11 @@ import java.util.List;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.pignic.spacegrinder.AssetManager;
 import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Controllable;
@@ -93,8 +92,8 @@ public class ShipFactory {
 				config = new ArrayList<ShipPart>(list.size());
 				for (final JsonValue JsonValue : list) {
 					final ShipPart shipPart = json.readValue(clazz, JsonValue);
-					shipPart.textureRegion = new TextureRegion(
-							new Texture(Constants.SHIP_PART_TEXTURE_PATH + shipPart.texture + ".png"));
+					shipPart.textureRegion = AssetManager.getInstance()
+							.getTexture(Constants.SHIP_PART_TEXTURE_PATH + shipPart.texture + ".png");
 					config.add(shipPart);
 				}
 			}

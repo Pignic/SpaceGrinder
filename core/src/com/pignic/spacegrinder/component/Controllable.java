@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -18,13 +18,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import com.pignic.spacegrinder.factory.complex.ShipFactory.PART_TYPE;
+import com.pignic.spacegrinder.pojo.ShipPart;
 import com.pignic.spacegrinder.screen.AbstractScreen;
 
-public class Controllable extends Configurable implements Component {
+public class Controllable extends Configurable implements SerializableComponent {
 
 	public static abstract class Action implements Callable<Object> {
 		public Binding binding;
-		public Controllable controllable;
+		public Entity entity;
+		public ShipPart shipPart;
+
+		public Action(final Entity entity) {
+			this.entity = entity;
+		}
 	}
 
 	public static class Binding {
@@ -47,7 +56,7 @@ public class Controllable extends Configurable implements Component {
 		}
 	}
 
-	private final Action action;
+	private Action action;
 
 	private final List<Binding> bindings = new ArrayList<Binding>(1);
 
@@ -57,16 +66,20 @@ public class Controllable extends Configurable implements Component {
 
 	private Action onPress;
 
+	private ShipPart shipPart;
+
+	public Controllable() {
+
+	}
+
 	public Controllable(final Action action, final float maxAmount, final Binding... bindings) {
 		maxAmout = maxAmount;
 		this.action = action;
-		action.controllable = this;
 		this.bindings.addAll(Arrays.asList(bindings));
 	}
 
 	public Controllable(final Action action, final float amount, final int... keycodes) {
 		this.action = action;
-		action.controllable = this;
 		maxAmout = amount;
 		for (final int keycode : keycodes) {
 			bindings.add(new Binding(keycode, amount));
@@ -75,7 +88,6 @@ public class Controllable extends Configurable implements Component {
 
 	public Controllable(final int keycode, final Action action, final float amount) {
 		this.action = action;
-		action.controllable = this;
 		maxAmout = amount;
 		bindings.add(new Binding(keycode, amount));
 	}
@@ -123,6 +135,17 @@ public class Controllable extends Configurable implements Component {
 		table.add(scaleSlider);
 		table.add(removeButton);
 		table.row();
+	}
+
+	@Override
+	public void deserialize(final Json json, final JsonValue jsonData) {
+		maxAmout = jsonData.getFloat("maxAmout");
+		final JsonValue jsonBindings = jsonData.get("bindings");
+		for (int i = 0; i < jsonBindings.size; ++i) {
+			final JsonValue jsonBinding = jsonBindings.get(i);
+			addBinding(jsonBinding.getInt("keycode"), jsonBinding.getFloat("amount"));
+		}
+		shipPart = PART_TYPE.valueOf(jsonData.getString("type")).config.get(jsonData.getInt("typeIndex"));
 	}
 
 	public Action getAction() {
@@ -174,13 +197,54 @@ public class Controllable extends Configurable implements Component {
 		return onPress;
 	}
 
+	public ShipPart getShipPart() {
+		return shipPart;
+	}
+
+	@Override
+	public void serialize(final Json json) {
+		json.writeValue("maxAmout", maxAmout);
+		json.writeArrayStart("bindings");
+		for (final Binding binding : bindings) {
+			json.writeObjectStart();
+			json.writeValue("amount", binding.amount);
+			json.writeValue("keycode", binding.keycode);
+			json.writeObjectEnd();
+		}
+		json.writeArrayEnd();
+		json.writeValue("type", shipPart.getPartType().name());
+		json.writeValue("typeIndex", shipPart.getPartIndex());
+	}
+
+	public Controllable setAction(final Action action) {
+		this.action = action;
+		this.action.shipPart = shipPart;
+		return this;
+	}
+
 	public Controllable setCancelAction(final Action cancelAction) {
 		this.cancelAction = cancelAction;
+		this.cancelAction.shipPart = shipPart;
 		return this;
 	}
 
 	public void setOnPress(final Action onPress) {
 		this.onPress = onPress;
+		this.onPress.shipPart = shipPart;
+	}
+
+	public Controllable setShipPart(final ShipPart shipPart) {
+		this.shipPart = shipPart;
+		if (action != null) {
+			action.shipPart = shipPart;
+		}
+		if (cancelAction != null) {
+			cancelAction.shipPart = shipPart;
+		}
+		if (onPress != null) {
+			onPress.shipPart = shipPart;
+		}
+		return this;
 	}
 
 }

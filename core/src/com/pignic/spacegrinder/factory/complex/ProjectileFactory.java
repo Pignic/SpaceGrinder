@@ -8,8 +8,12 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.pignic.spacegrinder.AssetManager;
+import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.component.Physical;
+import com.pignic.spacegrinder.component.Position;
 import com.pignic.spacegrinder.component.Projectile;
+import com.pignic.spacegrinder.component.Renderable;
 import com.pignic.spacegrinder.pojo.Weapon.Damage;
 
 public class ProjectileFactory {
@@ -31,9 +35,13 @@ public class ProjectileFactory {
 		final Physical physical = new Physical(world, entity, bodyDef, fixtureDef);
 		physical.getBody().applyLinearImpulse(physical.getBody().getWorldVector(new Vector2(1, 0).scl(speed)),
 				physical.getBody().getWorldCenter(), true);
+		emitter.applyLinearImpulse(emitter.getWorldVector(new Vector2(-1, 0)).scl(speed), emitter.getWorldCenter(),
+				true);
 		physical.getBody().getFixtureList().get(0).setUserData(emitter);
 		entity.add(physical);
 		entity.add(new Projectile((Entity) emitter.getUserData(), range, speed, damage, damages));
+		entity.add(new Position());
+		entity.add(new Renderable(AssetManager.getInstance().getTexture(Constants.TEXTURE_PATH + "bullet.png")));
 		return entity;
 	}
 }

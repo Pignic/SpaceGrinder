@@ -1,17 +1,28 @@
 package com.pignic.spacegrinder.component;
 
-import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 
-public class Timer implements Component {
+public class Timer implements SerializableComponent {
 
 	private float currentTime = 0;
 
 	private boolean destroyOnTimeout = false;
 
-	private final float time;
+	private float time;
+
+	public Timer() {
+	}
 
 	public Timer(final float time) {
 		this.time = time;
+	}
+
+	@Override
+	public void deserialize(final Json json, final JsonValue jsonData) {
+		time = jsonData.getFloat("time");
+		currentTime = jsonData.getFloat("currentTime");
+		destroyOnTimeout = jsonData.getBoolean("destroyOnTimeout");
 	}
 
 	public boolean done() {
@@ -28,6 +39,13 @@ public class Timer implements Component {
 
 	public void reset() {
 		currentTime = 0;
+	}
+
+	@Override
+	public void serialize(final Json json) {
+		json.writeValue("currentTime", currentTime);
+		json.writeValue("time", time);
+		json.writeValue("destroyOnTimeout", destroyOnTimeout);
 	}
 
 	public Timer setDestroyOnTimeout(final boolean destroyOnTimeout) {

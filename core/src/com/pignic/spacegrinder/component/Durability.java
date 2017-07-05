@@ -3,10 +3,12 @@ package com.pignic.spacegrinder.component;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import com.pignic.spacegrinder.pojo.Deflection;
+import com.pignic.spacegrinder.pojo.Deflection.TYPE;
 
-public class Durability implements Component {
+public class Durability implements SerializableComponent {
 
 	public static class Damage {
 
@@ -32,7 +34,11 @@ public class Durability implements Component {
 
 	private final Map<Deflection.TYPE, Deflection> deflections = new HashMap<Deflection.TYPE, Deflection>();
 
-	private final float durability;
+	private float durability = 1;
+
+	public Durability() {
+
+	}
 
 	public Durability(final float durability, final Deflection[] deflections) {
 		this.durability = durability;
@@ -41,6 +47,19 @@ public class Durability implements Component {
 			for (final Deflection deflection : deflections) {
 				this.deflections.put(deflection.type, deflection);
 			}
+		}
+	}
+
+	@Override
+	public void deserialize(final Json json, final JsonValue jsonData) {
+		currentDurability = jsonData.getFloat("currentDurability");
+		durability = jsonData.getFloat("durability");
+		final JsonValue jsonDeflections = jsonData.get("deflections");
+		for (int i = 0; i < jsonDeflections.size; ++i) {
+			final JsonValue jsonDeflection = jsonDeflections.get(i);
+			final Deflection deflection = new Deflection(TYPE.valueOf(jsonDeflection.getString("type")),
+					jsonDeflection.getFloat("factor"));
+			deflections.put(deflection.type, deflection);
 		}
 	}
 
@@ -68,5 +87,19 @@ public class Durability implements Component {
 			currentDurability = durability;
 		}
 		return currentDurability;
+	}
+
+	@Override
+	public void serialize(final Json json) {
+		json.writeValue("currentDurability", currentDurability);
+		json.writeValue("durability", durability);
+		json.writeArrayStart("deflections");
+		for (final Deflection deflection : deflections.values()) {
+			json.writeObjectStart();
+			json.writeValue("type", deflection.type.name());
+			json.writeValue("factor", deflection.factor);
+			json.writeObjectEnd();
+		}
+		json.writeArrayEnd();
 	}
 }

@@ -12,10 +12,12 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Durability;
+import com.pignic.spacegrinder.component.Id;
 import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.component.Position;
 import com.pignic.spacegrinder.component.Renderable;
 import com.pignic.spacegrinder.pojo.ShipPart;
+import com.pignic.spacegrinder.service.IDService;
 
 public abstract class ShipPartFactory {
 
@@ -59,6 +61,7 @@ public abstract class ShipPartFactory {
 	public Entity buildPart(final World world, final ShipPart part, final Vector2 position, final float angle) {
 		final Entity entity = new Entity();
 		entity.add(new com.pignic.spacegrinder.component.ShipPart(1));
+		entity.add(new Id(IDService.getId()));
 		final float scl = 1f / SpaceGrinder.WORLD_SCALE * 15f;
 		entity.add(new Position(new Vector2(), new Vector2(6 * scl, 4 * scl)));
 		entity.add(getPhysicalComponent(world, entity, part, position, angle));

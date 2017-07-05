@@ -1,24 +1,27 @@
 package com.pignic.spacegrinder.component;
 
-import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import com.pignic.spacegrinder.AssetManager;
 import com.pignic.spacegrinder.SpaceGrinder;
 
-public class Renderable implements Component {
-
-	private Color color = new Color(1, 0, 0, 1);
+public class Renderable implements SerializableComponent {
 
 	private boolean rotate = true;
 
 	private float scale = 1f;
 
-	private final Sprite sprite;
+	private Sprite sprite;
 
 	private TextureRegion texture;
 
 	private boolean tiled = false;
+
+	public Renderable() {
+
+	}
 
 	public Renderable(final TextureRegion texture) {
 		this(texture, 1);
@@ -27,13 +30,16 @@ public class Renderable implements Component {
 	public Renderable(final TextureRegion texture, final float scale) {
 		this.texture = texture;
 		this.scale = scale;
-		sprite = new Sprite(texture);
-		sprite.setOriginCenter();
-		sprite.setScale(this.scale / SpaceGrinder.WORLD_SCALE);
+		setSprite();
 	}
 
-	public Color getColor() {
-		return color;
+	@Override
+	public void deserialize(final Json json, final JsonValue jsonData) {
+		rotate = jsonData.getBoolean("rotate");
+		scale = jsonData.getFloat("scale");
+		tiled = jsonData.getBoolean("tiled");
+		texture = AssetManager.getInstance().getTexture(jsonData.getString("texture"));
+		setSprite();
 	}
 
 	public float getScale() {
@@ -56,8 +62,12 @@ public class Renderable implements Component {
 		return tiled;
 	}
 
-	public void setColor(final Color color) {
-		this.color = color;
+	@Override
+	public void serialize(final Json json) {
+		json.writeValue("rotate", rotate);
+		json.writeValue("scale", scale);
+		json.writeValue("tiled", tiled);
+		json.writeValue("texture", AssetManager.getInstance().getTexturePath(texture));
 	}
 
 	public void setRotate(final boolean rotate) {
@@ -67,6 +77,12 @@ public class Renderable implements Component {
 	public void setScale(final float scale) {
 		this.scale = scale;
 		sprite.setScale(getScale() / SpaceGrinder.WORLD_SCALE);
+	}
+
+	private void setSprite() {
+		sprite = new Sprite(texture);
+		sprite.setOriginCenter();
+		sprite.setScale(scale / SpaceGrinder.WORLD_SCALE);
 	}
 
 	public void setTexture(final TextureRegion texture) {

@@ -1,12 +1,11 @@
 package com.pignic.spacegrinder.screen;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
@@ -14,6 +13,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -28,11 +28,13 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.pignic.spacegrinder.Constants;
 import com.pignic.spacegrinder.RenderHelper;
 import com.pignic.spacegrinder.SpaceGrinder;
@@ -43,6 +45,7 @@ import com.pignic.spacegrinder.factory.basic.StructureFactory;
 import com.pignic.spacegrinder.factory.complex.ShipFactory;
 import com.pignic.spacegrinder.factory.complex.ShipFactory.PART_TYPE;
 import com.pignic.spacegrinder.pojo.ShipPart;
+import com.pignic.spacegrinder.service.SaveService;
 import com.pignic.spacegrinder.system.CollisionSystem;
 import com.pignic.spacegrinder.system.ControlSystem;
 import com.pignic.spacegrinder.system.DurabilitySystem;
@@ -57,6 +60,9 @@ import box2dLight.RayHandler;
 public class BuilderScreen extends AbstractScreen {
 
 	private final static float cameraSpeed = 0.5f;
+
+	private Table actionsTable;
+
 	private final SpriteBatch batch;
 	private final OrthographicCamera camera;
 	private ControlSystem controlSystem;
@@ -65,7 +71,6 @@ public class BuilderScreen extends AbstractScreen {
 	private ShipPart currentType;
 	private final Box2DDebugRenderer debugRenderer;
 	private final PooledEngine engine;
-	private final List<Entity> entities = new ArrayList<Entity>();
 	private final SpaceGrinder game;
 	private final Texture grid;
 	private Body lastPickedBody;
@@ -87,7 +92,9 @@ public class BuilderScreen extends AbstractScreen {
 	private Body originBody;
 	private boolean paused = true;
 	private Body pickedBody;
+
 	private Table propertiesTable;
+
 	private float rotation = 0;
 
 	private boolean runningSimulation = false;
@@ -112,10 +119,10 @@ public class BuilderScreen extends AbstractScreen {
 		engine.addSystem(new PhysicSystem(world));
 		engine.addSystem(new RenderSystem(batch));
 		engine.addSystem(new LightSystem(batch, lightsRayHandler));
-		engine.addSystem(new ProjectileSystem(world, engine));
+		engine.addSystem(new ProjectileSystem());
 		engine.addSystem(new TimerSystem(engine));
-		engine.addSystem(new CollisionSystem(world, engine));
-		engine.addSystem(new DurabilitySystem(world, engine));
+		engine.addSystem(new CollisionSystem(world));
+		engine.addSystem(new DurabilitySystem());
 
 		grid = new Texture(Constants.TEXTURE_PATH + "grid.png");
 		originBody = world.createBody(new BodyDef());
@@ -126,8 +133,9 @@ public class BuilderScreen extends AbstractScreen {
 				if (!super.keyDown(keyCode)) {
 					if (keyCode == Keys.DEL) {
 						if (pickedBody != null) {
-							engine.removeEntity((Entity) pickedBody.getUserData());
-							world.destroyBody(pickedBody);
+							final Entity entity = (Entity) pickedBody.getUserData();
+							entity.getComponent(Physical.class).destroyBody();
+							engine.removeEntity(entity);
 							pickedBody = null;
 							propertiesTable.setVisible(false);
 						}
@@ -187,7 +195,6 @@ public class BuilderScreen extends AbstractScreen {
 									}
 								}
 								engine.addEntity(createdEntity);
-								entities.add(createdEntity);
 							}
 						} else if (pickedBody != null) {
 							// Show properties
@@ -205,18 +212,44 @@ public class BuilderScreen extends AbstractScreen {
 		setSimulation(false);
 	}
 
-	public Table buildMenu(final BuilderScreen screen) {
+	private Table buildActions(final BuilderScreen screen) {
 		final Table table = new Table(style.skin);
-		final Button runButton = new Button(style.skin);
-		runButton.add(new Label("run", style.skin));
+		table.setWidth(128);
+		final ImageButton runButton = new ImageButton(
+				new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("texture/ui/run.png")))));
 		runButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(final ChangeEvent event, final Actor actor) {
 				setSimulation(!runningSimulation);
 			}
 		});
-		table.add(runButton).width(100).left();
-		table.row();
+		final ImageButton saveButton = new ImageButton(
+				new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("texture/ui/save.png")))));
+		saveButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(final ChangeEvent event, final Actor actor) {
+				SaveService.save("test", engine.getEntities());
+			}
+		});
+		final ImageButton loadButton = new ImageButton(
+				new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("texture/ui/load.png")))));
+		loadButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(final ChangeEvent event, final Actor actor) {
+				final Entity[] entities = SaveService.load("test", world);
+				for (final Entity entity : entities) {
+					engine.addEntity(entity);
+				}
+			}
+		});
+		table.add(runButton).width(32).height(32);
+		table.add(saveButton).width(32).height(32);
+		table.add(loadButton).width(32).height(32);
+		return table;
+	}
+
+	public Table buildMenu(final BuilderScreen screen) {
+		final Table table = new Table(style.skin);
 		final Tree tree = new Tree(style.skin);
 		for (final ShipFactory.PART_TYPE type : ShipFactory.PART_TYPE.values()) {
 			final Label label = new Label(type.name(), style.skin, "light");
@@ -232,7 +265,7 @@ public class BuilderScreen extends AbstractScreen {
 						clearTempEntity();
 						currentType = (ShipPart) actor.getUserObject();
 						currentButton = actor;
-						final Entity entity = buildPart(currentType, new Vector2());
+						final Entity entity = buildPart(currentType, new Vector2(mouse.x, mouse.y));
 						Physical physical;
 						if (entity != null && (physical = entity.getComponent(Physical.class)) != null) {
 							final MouseJointDef def = new MouseJointDef();
@@ -247,6 +280,9 @@ public class BuilderScreen extends AbstractScreen {
 							mouseJoint = (MouseJoint) world.createJoint(def);
 							physical.getBody().setAwake(true);
 						}
+						if (entity != null) {
+							engine.addEntity(entity);
+						}
 					}
 				});
 				node.add(new Node(partButton));
@@ -259,7 +295,7 @@ public class BuilderScreen extends AbstractScreen {
 
 	private Entity buildPart(final ShipPart type, final Vector2 position) {
 		Entity createdEntity = null;
-		if (ShipFactory.PART_TYPE.STRUCTURE.equals(currentType)) {
+		if (ShipFactory.PART_TYPE.STRUCTURE.equals(currentType.getPartType())) {
 			if (pickedBody != null && lastPickedBody != null && pickedBody != lastPickedBody) {
 				createdEntity = StructureFactory.build(world, PART_TYPE.STRUCTURE.config.get(0),
 						((Entity) pickedBody.getUserData()).getComponent(Physical.class),
@@ -332,7 +368,7 @@ public class BuilderScreen extends AbstractScreen {
 		RenderHelper.drawTiledParalax(grid, batch, 1, 1, camera);
 		engine.update(delta);
 		batch.end();
-		debugRenderer.render(world, camera.combined);
+		// debugRenderer.render(world, camera.combined);
 		stage.act(delta);
 		stage.draw();
 	}
@@ -346,6 +382,7 @@ public class BuilderScreen extends AbstractScreen {
 		stage.getViewport().setWorldSize(width, height);
 		stage.getViewport().apply(true);
 		propertiesTable.setPosition(stage.getWidth() - propertiesTable.getWidth(), stage.getHeight());
+		actionsTable.setPosition(stage.getWidth() - actionsTable.getWidth(), 32);
 	}
 
 	@Override
@@ -354,11 +391,9 @@ public class BuilderScreen extends AbstractScreen {
 	}
 
 	private boolean setSimulation(final boolean active) {
+		final ImmutableArray<Entity> entities = engine.getEntitiesFor(Family.all(Physical.class).get());
 		for (final Entity entity : entities) {
-			final Physical physical = entity.getComponent(Physical.class);
-			if (physical != null) {
-				physical.getBody().setType(active ? BodyType.DynamicBody : BodyType.StaticBody);
-			}
+			entity.getComponent(Physical.class).getBody().setType(active ? BodyType.DynamicBody : BodyType.StaticBody);
 		}
 		runningSimulation = active;
 		controlSystem.setProcessing(active);
@@ -382,6 +417,7 @@ public class BuilderScreen extends AbstractScreen {
 		stage.clear();
 		stage.addActor(menuTable = buildMenu(this));
 		stage.addActor(propertiesTable = buildProperties(this));
+		stage.addActor(actionsTable = buildActions(this));
 		Gdx.input.setInputProcessor(stage);
 	}
 
