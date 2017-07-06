@@ -218,7 +218,8 @@ public class BuilderScreen extends AbstractScreen {
 
 	private Table buildActions(final BuilderScreen screen) {
 		final Table table = new Table(style.skin);
-		table.setWidth(128);
+		table.setWidth(135);
+		table.setHeight(32);
 		final ImageButton runButton = new ImageButton(
 				new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("texture/ui/run.png")))));
 		runButton.addListener(new ChangeListener() {
@@ -246,9 +247,9 @@ public class BuilderScreen extends AbstractScreen {
 				}
 			}
 		});
-		table.add(runButton).width(32).height(32);
-		table.add(saveButton).width(32).height(32);
-		table.add(loadButton).width(32).height(32);
+		table.add(runButton).width(45).height(32);
+		table.add(saveButton).width(45).height(32);
+		table.add(loadButton).width(45).height(32);
 		return table;
 	}
 
@@ -389,7 +390,7 @@ public class BuilderScreen extends AbstractScreen {
 		stage.getViewport().setWorldSize(width, height);
 		stage.getViewport().apply(true);
 		propertiesTable.setPosition(stage.getWidth() - propertiesTable.getWidth(), stage.getHeight());
-		actionsTable.setPosition(stage.getWidth() - actionsTable.getWidth(), 32);
+		actionsTable.setPosition(stage.getWidth() - actionsTable.getWidth(), 10);
 	}
 
 	@Override
