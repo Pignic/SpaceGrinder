@@ -3,7 +3,7 @@ package com.pignic.spacegrinder.pojo;
 public class Deflection {
 
 	public static enum TYPE {
-		ELECTRIC, HEAT, KINETIC, LIGHT, PLASMA, SONIC
+		ELECTRIC, HEAT, KINETIC, LIGHT, MINING, PLASMA, SONIC
 	}
 
 	public float factor = 1;

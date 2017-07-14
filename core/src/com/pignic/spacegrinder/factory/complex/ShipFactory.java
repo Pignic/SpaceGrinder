@@ -83,7 +83,7 @@ public class ShipFactory {
 		public String typeName;
 
 		<T extends ShipPart> PART_TYPE(final String typeName, final String configFile, final Class<T> clazz) {
-			this.configFile = Constants.DATA_PATH + configFile + ".json";
+			this.configFile = Constants.DATA_PATH + "shipPart/" + configFile + ".json";
 			this.clazz = clazz;
 			final Json json = new Json();
 			final ArrayList<JsonValue> list = json.fromJson(ArrayList.class, Gdx.files.internal(this.configFile));

@@ -2,12 +2,12 @@ package com.pignic.spacegrinder;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 
 public class RenderHelper {
 
-	public static void drawTiledParalax(final Texture texture, final SpriteBatch batch, final float textureFactor,
-			final float positionFactor, final Camera camera) {
+	public static void drawTiledParalax(final Texture texture, final PolygonSpriteBatch batch,
+			final float textureFactor, final float positionFactor, final Camera camera) {
 		final float paralaxTextureWidth = texture.getWidth() / SpaceGrinder.WORLD_SCALE * textureFactor;
 		final float paralaxTextureHeight = texture.getHeight() / SpaceGrinder.WORLD_SCALE * textureFactor;
 		final float camX = camera.position.x;

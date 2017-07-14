@@ -12,7 +12,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -43,6 +43,7 @@ import com.pignic.spacegrinder.component.Link;
 import com.pignic.spacegrinder.component.Physical;
 import com.pignic.spacegrinder.factory.basic.ShipPartFactory;
 import com.pignic.spacegrinder.factory.basic.StructureFactory;
+import com.pignic.spacegrinder.factory.complex.AsteroidFactory;
 import com.pignic.spacegrinder.factory.complex.ShipFactory;
 import com.pignic.spacegrinder.pojo.ShipPart;
 import com.pignic.spacegrinder.service.SaveService;
@@ -63,12 +64,9 @@ public class BuilderScreen extends AbstractScreen {
 	private final static float cameraSpeed = 0.5f;
 
 	private Table actionsTable;
-
-	private final SpriteBatch batch;
+	private PolygonSpriteBatch batch;
 	private final OrthographicCamera camera;
 	private ControlSystem controlSystem;
-	private Actor currentButton;
-	private Entity currentPiece;
 	private ShipPart currentType;
 	private final Box2DDebugRenderer debugRenderer;
 	private final PooledEngine engine;
@@ -96,6 +94,7 @@ public class BuilderScreen extends AbstractScreen {
 	protected MouseJoint mouseJoint = null;
 	private Body originBody;
 	private boolean paused = true;
+
 	private Body pickedBody;
 
 	private Table propertiesTable;
@@ -117,16 +116,16 @@ public class BuilderScreen extends AbstractScreen {
 		debugRenderer = new Box2DDebugRenderer();
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / SpaceGrinder.WORLD_SCALE,
 				Gdx.graphics.getHeight() / SpaceGrinder.WORLD_SCALE);
-		batch = new SpriteBatch();
+		batch = new PolygonSpriteBatch();
 		lightsRayHandler = new RayHandler(world);
 		controlSystem = new ControlSystem();
 		engine.addSystem(controlSystem);
 		engine.addSystem(new LinkSystem(world));
 		engine.addSystem(new PhysicSystem(world));
 		engine.addSystem(new RenderSystem(batch));
-		engine.addSystem(new LightSystem(batch, lightsRayHandler));
+		engine.addSystem(new LightSystem(lightsRayHandler));
 		engine.addSystem(new ProjectileSystem());
-		engine.addSystem(new TimerSystem(engine));
+		engine.addSystem(new TimerSystem());
 		engine.addSystem(new CollisionSystem(world));
 		engine.addSystem(new DurabilitySystem());
 
@@ -214,6 +213,7 @@ public class BuilderScreen extends AbstractScreen {
 			}
 		};
 		setSimulation(false);
+		engine.addEntity(AsteroidFactory.createAsteroid(world, new Vector2(20, 0), 20, 50, 0.8f));
 	}
 
 	private Table buildActions(final BuilderScreen screen) {
@@ -269,7 +269,6 @@ public class BuilderScreen extends AbstractScreen {
 					public void changed(final ChangeEvent event, final Actor actor) {
 						clearTempEntity();
 						currentType = (ShipPart) actor.getUserObject();
-						currentButton = actor;
 						final Entity entity = buildPart(currentType, new Vector2(mouse.x, mouse.y));
 						Physical physical;
 						if (entity != null && (physical = entity.getComponent(Physical.class)) != null) {
@@ -328,7 +327,6 @@ public class BuilderScreen extends AbstractScreen {
 			propertiesTable.clear();
 		}
 		currentType = null;
-		currentButton = null;
 		lastPickedBody = null;
 		pickedBody = null;
 		if (mouseJoint != null) {
@@ -376,7 +374,7 @@ public class BuilderScreen extends AbstractScreen {
 		RenderHelper.drawTiledParalax(grid, batch, 1, 1, camera);
 		engine.update(delta);
 		batch.end();
-		debugRenderer.render(world, camera.combined);
+		// debugRenderer.render(world, camera.combined);
 		stage.act(delta);
 		stage.draw();
 	}

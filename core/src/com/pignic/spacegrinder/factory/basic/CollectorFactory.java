@@ -12,6 +12,7 @@ public class CollectorFactory extends ShipPartFactory {
 	public Entity buildPart(final World world, final ShipPart part, final Vector2 position, final float angle,
 			final Entity entity) {
 		final Collector config = (Collector) part;
+		entity.add(new com.pignic.spacegrinder.component.Collector());
 		return entity;
 	}
 

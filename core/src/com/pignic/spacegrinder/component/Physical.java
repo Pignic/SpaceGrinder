@@ -26,6 +26,11 @@ public class Physical implements SerializableComponent {
 
 	}
 
+	public Physical(final Entity entity, final Body body) {
+		body.setUserData(entity);
+		this.body = body;
+	}
+
 	public Physical(final World world, final Entity entity, final BodyDef bodyDef, final FixtureDef fixtureDef) {
 		this.bodyDef = bodyDef;
 		this.fixtureDef = fixtureDef;
@@ -87,6 +92,10 @@ public class Physical implements SerializableComponent {
 			json.writeObjectEnd();
 		}
 		json.writeArrayEnd();
+	}
+
+	public void setBody(final Body body) {
+		this.body = body;
 	}
 
 }

@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -36,7 +36,7 @@ import box2dLight.RayHandler;
 public class GameScreen extends AbstractScreen {
 
 	private final Texture background;
-	private final SpriteBatch batch;
+	private PolygonSpriteBatch batch;
 	private final Camera camera;
 	private final Box2DDebugRenderer debugRenderer;
 	private final PooledEngine engine;
@@ -57,16 +57,16 @@ public class GameScreen extends AbstractScreen {
 		debugRenderer.setDrawVelocities(true);
 		camera = new OrthographicCamera(Gdx.graphics.getWidth() / SpaceGrinder.WORLD_SCALE,
 				Gdx.graphics.getHeight() / SpaceGrinder.WORLD_SCALE);
-		batch = new SpriteBatch();
+		batch = new PolygonSpriteBatch();
 		lightsRayHandler = new RayHandler(world);
 		final ControlSystem controlSystem = new ControlSystem();
 		engine.addSystem(controlSystem);
 		engine.addSystem(new PhysicSystem(world));
 		engine.addSystem(new RenderSystem(batch));
 		engine.addSystem(new LinkSystem(world));
-		engine.addSystem(new LightSystem(batch, lightsRayHandler));
+		engine.addSystem(new LightSystem(lightsRayHandler));
 		engine.addSystem(new ProjectileSystem());
-		engine.addSystem(new TimerSystem(engine));
+		engine.addSystem(new TimerSystem());
 		engine.addSystem(new CollisionSystem(world));
 		engine.addSystem(new DurabilitySystem());
 		final List<Entity> entities = ShipFactory.buildShip(world);

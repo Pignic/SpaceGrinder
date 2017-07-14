@@ -1,5 +1,7 @@
 package com.pignic.spacegrinder.component;
 
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.graphics.g2d.PolygonSprite;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Json;
@@ -8,6 +10,8 @@ import com.pignic.spacegrinder.AssetManager;
 import com.pignic.spacegrinder.SpaceGrinder;
 
 public class Renderable implements SerializableComponent {
+
+	private PolygonSprite polygonSprite;
 
 	private boolean rotate = true;
 
@@ -42,6 +46,10 @@ public class Renderable implements SerializableComponent {
 		setSprite();
 	}
 
+	public PolygonSprite getPolygonSprite() {
+		return polygonSprite;
+	}
+
 	public float getScale() {
 		return scale;
 	}
@@ -70,6 +78,32 @@ public class Renderable implements SerializableComponent {
 		json.writeValue("texture", AssetManager.getInstance().getTexturePath(texture));
 	}
 
+	public Renderable setPolygon(final float[] vertices, final short[] triangles) {
+		final float[] updated = new float[vertices.length];
+		float minx = 0;
+		float miny = 0;
+		for (int i = 0; i < vertices.length; ++i) {
+			final float val = vertices[i];
+			if (i % 2 == 0) {
+				if (val < minx) {
+					minx = val;
+				}
+			} else {
+				if (val < miny) {
+					miny = val;
+				}
+			}
+		}
+		for (int i = 0; i < vertices.length; i += 2) {
+			updated[i] = vertices[i] - minx;
+			updated[i + 1] = vertices[i + 1] - miny;
+		}
+		polygonSprite = new PolygonSprite(new PolygonRegion(texture, updated, triangles));
+		polygonSprite.setOrigin(polygonSprite.getBoundingRectangle().width / 2f,
+				polygonSprite.getBoundingRectangle().height / 2f);
+		return this;
+	}
+
 	public void setRotate(final boolean rotate) {
 		this.rotate = rotate;
 	}
@@ -89,7 +123,8 @@ public class Renderable implements SerializableComponent {
 		this.texture = texture;
 	}
 
-	public void setTiled(final boolean tiled) {
+	public Renderable setTiled(final boolean tiled) {
 		this.tiled = tiled;
+		return this;
 	}
 }

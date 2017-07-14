@@ -8,7 +8,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.SortedIteratingSystem;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter.ScaledNumericValue;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.pignic.spacegrinder.SpaceGrinder;
 import com.pignic.spacegrinder.component.Particle;
 import com.pignic.spacegrinder.component.Position;
@@ -18,19 +18,22 @@ public class RenderSystem extends SortedIteratingSystem {
 
 	private static class Mapper {
 		private final static ComponentMapper<Particle> particle = ComponentMapper.getFor(Particle.class);
+		// private final static ComponentMapper<Physical> physical = ComponentMapper.getFor(Physical.class);
 		public final static ComponentMapper<Position> position = ComponentMapper.getFor(Position.class);
 		private final static ComponentMapper<Renderable> renderable = ComponentMapper.getFor(Renderable.class);
 	}
 
-	private final SpriteBatch batch;
+	// private final SpriteBatch batch;
+	private PolygonSpriteBatch batch;
 
-	public RenderSystem(final SpriteBatch batch) {
+	public RenderSystem(final PolygonSpriteBatch batch) {
 		super(Family.all(Position.class).one(Renderable.class, Particle.class).get(), new Comparator<Entity>() {
 			@Override
 			public int compare(final Entity entityA, final Entity entityB) {
 				return (int) (Mapper.position.get(entityA).getZ() - Mapper.position.get(entityB).getZ());
 			}
 		});
+		// this.batch = batch;
 		this.batch = batch;
 	}
 
@@ -59,10 +62,18 @@ public class RenderSystem extends SortedIteratingSystem {
 			emitter.draw(batch, deltaTime);
 		}
 		if (renderable != null) {
-			renderable.getSprite().setRotation((float) Math.toDegrees(position.getAngle()));
-			renderable.getSprite().setCenter(position.get().x / SpaceGrinder.WORLD_SCALE,
-					position.get().y / SpaceGrinder.WORLD_SCALE);
-			renderable.getSprite().draw(batch);
+			if (renderable.isTiled()) {
+				renderable.getPolygonSprite().setRotation((float) Math.toDegrees(position.getAngle()));
+				renderable.getPolygonSprite().setPosition(
+						position.get().x / SpaceGrinder.WORLD_SCALE - renderable.getPolygonSprite().getOriginX(),
+						position.get().y / SpaceGrinder.WORLD_SCALE - renderable.getPolygonSprite().getOriginY());
+				renderable.getPolygonSprite().draw(batch);
+			} else {
+				renderable.getSprite().setRotation((float) Math.toDegrees(position.getAngle()));
+				renderable.getSprite().setCenter(position.get().x / SpaceGrinder.WORLD_SCALE,
+						position.get().y / SpaceGrinder.WORLD_SCALE);
+				renderable.getSprite().draw(batch);
+			}
 		}
 	}
 }

@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.pignic.spacegrinder.component.LightSource;
 
 import box2dLight.RayHandler;
@@ -17,7 +16,7 @@ public class LightSystem extends IteratingSystem {
 
 	private final RayHandler rayHandler;
 
-	public LightSystem(final SpriteBatch batch, final RayHandler rayHandler) {
+	public LightSystem(final RayHandler rayHandler) {
 		super(Family.all(LightSource.class).get());
 		this.rayHandler = rayHandler;
 	}
